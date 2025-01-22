@@ -7,7 +7,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "PERSONA_JURIDICA")
 public class PersonaJuridica implements Serializable
@@ -59,8 +63,6 @@ public class PersonaJuridica implements Serializable
     @ManyToOne
     @JoinColumn(name = "PERSONA_NATURAL_ID", referencedColumnName = "ID", updatable = false, insertable = false)
     private PersonaNatural personaNatural;
-
-    public PersonaJuridica() {}
 
     public PersonaJuridica(Integer id) {
         this.id = id;

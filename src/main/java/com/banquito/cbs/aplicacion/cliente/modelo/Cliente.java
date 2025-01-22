@@ -7,7 +7,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "CLIENTE")
 public class Cliente implements Serializable
@@ -51,8 +55,6 @@ public class Cliente implements Serializable
     @ManyToOne
     @JoinColumn(name = "PERSONA_JURIDICA_ID", referencedColumnName = "ID", updatable = false, insertable = false)
     private PersonaJuridica personaJuridica;
-
-    public Cliente() {}
 
     public Cliente(Integer id) {
         this.id = id;

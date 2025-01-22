@@ -7,7 +7,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "PERSONA_NATURAL")
 public class PersonaNatural implements Serializable
@@ -69,8 +73,6 @@ public class PersonaNatural implements Serializable
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "FECHA_ACTUALIZACION")
     private LocalDateTime fechaActualizacion;
-
-    public PersonaNatural() {}
 
     public PersonaNatural(Integer id) {
         this.id = id;
