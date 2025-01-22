@@ -24,12 +24,12 @@ public class AutenticacionControlador {
         this.usuarioServicio = usuarioServicio;
     }
 
-    @PostMapping("/verificar-usuario")
+    @PostMapping("v1/verificar-usuario")
     public ResponseEntity<?> verificarUsuario(@Valid @RequestBody UsuarioValidacionPeticion peticion) {
         return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(this.servicio.verificarUsuario(peticion.getUsuario())));
     }
 
-    @PostMapping("/iniciar-sesion")
+    @PostMapping("v1/iniciar-sesion")
     public ResponseEntity<?> iniciarSesion(@RequestBody IniciarSesionPeticion peticion) {
         return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(this.servicio.login(peticion.getUsuario(), peticion.getContrasenia())));
     }

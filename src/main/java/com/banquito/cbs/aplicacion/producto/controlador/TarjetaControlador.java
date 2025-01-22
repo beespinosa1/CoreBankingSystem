@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("tarjetas")
+@RequestMapping("v1/tarjetas")
 @CrossOrigin("*")
 public class TarjetaControlador {
     private final TarjetaServicio servicio;

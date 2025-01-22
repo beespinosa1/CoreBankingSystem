@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("transacciones")
+@RequestMapping("v1/transacciones")
 @CrossOrigin("*")
 public class TransaccionControlador {
     private final TransaccionServicio servicio;

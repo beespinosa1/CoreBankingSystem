@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("personas-naturales")
+@RequestMapping("v1/personas-naturales")
 @CrossOrigin("*")
 public class PersonaNaturalControlador
 {

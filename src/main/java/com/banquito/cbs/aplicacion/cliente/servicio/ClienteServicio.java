@@ -30,7 +30,7 @@ public class ClienteServicio
     public Cliente buscarPorId(Integer id)
     {
         return this.repositorio.findById(id)
-                .orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ningún con ID: " + id));
+                .orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ningún cliente con ID: " + id));
     }
 
     public Cliente buscarPorPersonaNatural(PersonaNatural personaNatural)
