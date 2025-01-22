@@ -1,13 +1,11 @@
 package com.banquito.cbs.aplicacion.cliente.servicio;
 
+import com.banquito.cbs.aplicacion.cliente.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.cliente.modelo.Cliente;
 import com.banquito.cbs.aplicacion.cliente.modelo.PersonaJuridica;
 import com.banquito.cbs.aplicacion.cliente.modelo.PersonaNatural;
 import com.banquito.cbs.aplicacion.cliente.repositorio.ClienteRepositorio;
-import com.banquito.cbs.compartido.excepciones.EntidadNoEncontradaExcepcion;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,6 +14,7 @@ import java.time.ZoneId;
 public class ClienteServicio
 {
     private final ClienteRepositorio repositorio;
+    public static final String ENTITY_NAME = "Cliente";
 
     public static final String CORPORATIVO = "COR";
     public static final String PERSONA = "PER";
@@ -30,19 +29,19 @@ public class ClienteServicio
     public Cliente buscarPorId(Integer id)
     {
         return this.repositorio.findById(id)
-                .orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ningún cliente con ID: " + id));
+                .orElseThrow(() -> new NotFoundException(id.toString(), ENTITY_NAME));
     }
 
     public Cliente buscarPorPersonaNatural(PersonaNatural personaNatural)
     {
         return repositorio.findByPersonaNatural(personaNatural)
-            .orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ningún registro para: " + personaNatural));
+            .orElseThrow(() -> new NotFoundException(personaNatural.getId().toString(), ENTITY_NAME));
     }
 
     public Cliente buscarPorPersonaJuridica(PersonaJuridica personaJuridica)
     {
         return repositorio.findByPersonaJuridica(personaJuridica)
-            .orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ningún registro para: " + personaJuridica));
+            .orElseThrow(() -> new NotFoundException(personaJuridica.getId().toString(), ENTITY_NAME));
     }
 
     public void registrarClienteCorporativo(Cliente cliente)

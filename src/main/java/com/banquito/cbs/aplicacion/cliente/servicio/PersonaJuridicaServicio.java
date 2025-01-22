@@ -1,15 +1,15 @@
 package com.banquito.cbs.aplicacion.cliente.servicio;
 
+import com.banquito.cbs.aplicacion.cliente.excepcion.DuplicateException;
+import com.banquito.cbs.aplicacion.cliente.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.cliente.modelo.Cliente;
 import com.banquito.cbs.aplicacion.cliente.modelo.PersonaJuridica;
 import com.banquito.cbs.aplicacion.cliente.modelo.PersonaNatural;
 import com.banquito.cbs.aplicacion.cliente.repositorio.PersonaJuridicaRepositorio;
-import com.banquito.cbs.compartido.excepciones.EntidadDuplicadaExcepcion;
-import com.banquito.cbs.compartido.excepciones.EntidadNoEncontradaExcepcion;
+/* import com.banquito.cbs.compartido.excepciones.EntidadDuplicadaExcepcion;
+import com.banquito.cbs.compartido.excepciones.EntidadNoEncontradaExcepcion;*/
 import com.banquito.cbs.compartido.excepciones.OperacionInvalidaExcepcion;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,8 +21,9 @@ public class PersonaJuridicaServicio
 {
     private final PersonaJuridicaRepositorio repositorio;
     private final ClienteServicio clienteServicio;
+    public static final String ENTITY_NAME = "PersonaJuridica";
 
-    public PersonaJuridicaServicio(PersonaJuridicaRepositorio repositorio ,ClienteServicio clienteServicio)
+    public PersonaJuridicaServicio(PersonaJuridicaRepositorio repositorio, ClienteServicio clienteServicio)
     {
         this.repositorio = repositorio;
         this.clienteServicio = clienteServicio;
@@ -34,13 +35,13 @@ public class PersonaJuridicaServicio
 
     public PersonaJuridica buscarPorId(Integer id) {
         return this.repositorio.findById(id)
-                .orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ningún registro con el id: " + id));
+                .orElseThrow(() -> new NotFoundException(id.toString(), ENTITY_NAME));
     }
 
     public PersonaJuridica buscarPorRuc(String ruc)
     {
         return repositorio.findByRuc(ruc)
-            .orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ningún registro con el RUC: " + ruc));
+            .orElseThrow(() -> new NotFoundException(ruc, ENTITY_NAME));
     }
 
     public List<PersonaJuridica> buscarPorPersonaNatural(PersonaNatural personaNatural)
@@ -51,7 +52,7 @@ public class PersonaJuridicaServicio
     public void crear(PersonaJuridica persona)
     {
         if (repositorio.findByRuc(persona.getRuc()).isPresent())
-            throw new EntidadDuplicadaExcepcion("Ya existe un registro con el RUC: " + persona.getRuc());
+            throw new DuplicateException(persona.getRuc(), ENTITY_NAME);
 
         persona.setFechaCreacion(LocalDateTime.now(ZoneId.systemDefault()));
         persona.setFechaActualizacion(LocalDateTime.now(ZoneId.systemDefault()));
@@ -69,7 +70,6 @@ public class PersonaJuridicaServicio
     {
         if (!repositorio.findByRuc(persona.getRuc()).isPresent())
             throw new OperacionInvalidaExcepcion("No existe un registro con el RUC: " + persona.getRuc());
-
         repositorio.save(persona);
     }
 

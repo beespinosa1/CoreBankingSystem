@@ -5,7 +5,11 @@ import jakarta.validation.constraints.*;
 
 import java.io.Serializable;
 import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "DIRECCION")
 public class Direccion implements Serializable
@@ -64,8 +68,6 @@ public class Direccion implements Serializable
     @ManyToOne
     @JoinColumn(name = "PERSONA_JURIDICA_ID", referencedColumnName = "ID", updatable = false, insertable = false)
     private PersonaJuridica personaJuridica;
-
-    public Direccion() {}
 
     public Direccion(Integer id) {
         this.id = id;
