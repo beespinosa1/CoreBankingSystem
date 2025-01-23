@@ -10,7 +10,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "DETALLE_TRANSACCION")
 public class    DetalleTransaccion implements Serializable
@@ -74,8 +78,6 @@ public class    DetalleTransaccion implements Serializable
             }
         }
     }
-
-    public DetalleTransaccion() {}
 
     public DetalleTransaccion(Integer transaccionId) {
         this.transaccionId = transaccionId;

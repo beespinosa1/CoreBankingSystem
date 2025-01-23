@@ -1,8 +1,11 @@
 package com.banquito.cbs.aplicacion.transaccion.controlador;
 
 import com.banquito.cbs.aplicacion.transaccion.controlador.adaptador.TransaccionAdaptador;
+import com.banquito.cbs.aplicacion.transaccion.controlador.DTO.TransaccionDTO;
+import com.banquito.cbs.aplicacion.transaccion.controlador.mapper.TransaccionMapper;
 import com.banquito.cbs.aplicacion.transaccion.controlador.peticion.ConsumoPeticion;
 import com.banquito.cbs.aplicacion.transaccion.controlador.peticion.ConsumoValidacionPeticion;
+import com.banquito.cbs.aplicacion.transaccion.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.transaccion.modelo.Transaccion;
 import com.banquito.cbs.aplicacion.transaccion.servicio.TransaccionServicio;
 import com.banquito.cbs.compartido.excepciones.OperacionInvalidaExcepcion;
@@ -14,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,22 +28,42 @@ import java.util.Map;
 public class TransaccionControlador {
     private final TransaccionServicio servicio;
     private final TransaccionAdaptador adaptador;
+    private final TransaccionMapper mapper;
 
-    public TransaccionControlador(TransaccionServicio servicio, TransaccionAdaptador adaptador) {
+    public TransaccionControlador(TransaccionServicio servicio, TransaccionAdaptador adaptador, TransaccionMapper mapper) {
         this.servicio = servicio;
         this.adaptador = adaptador;
+        this.mapper = mapper;
     }
 
     @GetMapping("/cuenta/{id}")
-    public ResponseEntity<?> listarMovimientosCuenta(@PathVariable("id") Integer id)
-    {
-        return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(this.servicio.listarPorCuenta(id)));
+    public ResponseEntity<List<TransaccionDTO>> listarMovimientosCuenta(@PathVariable("id") Integer id) {
+        try {
+            List<Transaccion> transacciones = this.servicio.listarPorCuenta(id);
+            List<TransaccionDTO> dtos = new ArrayList<>(transacciones.size());
+            for(Transaccion transaccion : transacciones) {
+                dtos.add(mapper.toDTO(transaccion));
+            }
+            return ResponseEntity.ok(dtos);
+        } catch (NotFoundException nfe) {
+            System.err.println(nfe.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/tarjeta/{id}")
-    public ResponseEntity<?> listarMovimientosTarjeta(@PathVariable("id") Integer id)
-    {
-        return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(this.servicio.listarPorTarjeta(id)));
+    public ResponseEntity<List<TransaccionDTO>> listarMovimientosTarjeta(@PathVariable("id") Integer id) {
+        try {
+            List<Transaccion> transacciones = this.servicio.listarPorTarjeta(id);
+            List<TransaccionDTO> dtos = new ArrayList<>(transacciones.size());
+            for(Transaccion transaccion : transacciones) {
+                dtos.add(mapper.toDTO(transaccion));
+            }
+            return ResponseEntity.ok(dtos);
+        } catch (NotFoundException nfe) {
+            System.err.println(nfe.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /*@PostMapping("/deposito")

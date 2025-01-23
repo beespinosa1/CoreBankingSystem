@@ -5,6 +5,7 @@ import com.banquito.cbs.aplicacion.producto.modelo.Tarjeta;
 import com.banquito.cbs.aplicacion.producto.servicio.CuentaServicio;
 import com.banquito.cbs.aplicacion.producto.servicio.TarjetaServicio;
 import com.banquito.cbs.aplicacion.transaccion.excepcion.FraudeExcepcion;
+import com.banquito.cbs.aplicacion.transaccion.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.transaccion.modelo.ItemComision;
 import com.banquito.cbs.aplicacion.transaccion.modelo.Transaccion;
 import com.banquito.cbs.aplicacion.transaccion.modelo.DetalleTransaccion;
@@ -32,6 +33,7 @@ public class TransaccionServicio {
 
     private final TarjetaServicio tarjetaServicio;
     private final CuentaServicio cuentaServicio;
+    public static final String ENTITY_NAME = "Transaccion";
 
     private static final String TIPO_DEPOSITO = "DEP";
     private static final String TIPO_PAGO_TARJETA = "PTC";
@@ -65,13 +67,26 @@ public class TransaccionServicio {
 
     public List<Transaccion> listarPorTarjeta(Integer tarjetaId)
     {
-        return this.repositorio.findByTarjetaId(tarjetaId);
+        List<Transaccion> transacciones = this.repositorio.findByTarjetaId(tarjetaId);
+        if (transacciones.isEmpty()) {
+            throw new NotFoundException(tarjetaId.toString(), ENTITY_NAME);
+        }
+        return transacciones;
     }
 
     public List<Transaccion> listarPorCuenta(Integer cuentaId)
     {
-        return this.repositorio.findByCuentaId(cuentaId);
+        List<Transaccion> transacciones = this.repositorio.findByCuentaId(cuentaId);
+        if (transacciones.isEmpty()) {
+            throw new NotFoundException(cuentaId.toString(), ENTITY_NAME);
+        }
+        return transacciones;
     }
+
+   /*  public Transaccion buscarPorId(Integer id) {
+        return this.repositorio.findById(id)
+                .orElseThrow(() -> new NotFoundException(id.toString(), ENTITY_NAME));
+    } */
 
     @Transactional
     public void crearDeposito(Cuenta cuenta, BigDecimal valor, String canal, String descripcion)
