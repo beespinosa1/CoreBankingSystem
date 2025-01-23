@@ -8,7 +8,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "TRANSACCION")
 public class Transaccion implements Serializable
@@ -66,8 +70,6 @@ public class Transaccion implements Serializable
     @OneToOne
     @JoinColumn(name = "ID", referencedColumnName = "TRANSACCION_ID", insertable = false, updatable = false)
     private DetalleTransaccion detalleTransaccion;
-
-    public Transaccion() {}
 
     public Transaccion(Integer id) {
         this.id = id;
