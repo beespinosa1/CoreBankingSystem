@@ -2,35 +2,50 @@ package com.banquito.cbs.aplicacion.autenticacion.controlador;
 
 import com.banquito.cbs.aplicacion.autenticacion.controlador.peticion.IniciarSesionPeticion;
 import com.banquito.cbs.aplicacion.autenticacion.controlador.peticion.UsuarioValidacionPeticion;
-import com.banquito.cbs.aplicacion.autenticacion.modelo.Usuario;
 import com.banquito.cbs.aplicacion.autenticacion.service.AutenticacionServicio;
-import com.banquito.cbs.aplicacion.autenticacion.service.UsuarioServicio;
 import com.banquito.cbs.compartido.utilidades.UtilidadRespuesta;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
+@RequestMapping("v1")
 public class AutenticacionControlador {
-    private final AutenticacionServicio servicio;
-    private final UsuarioServicio usuarioServicio;
 
-    public AutenticacionControlador(AutenticacionServicio servicio, UsuarioServicio usuarioServicio) {
+    private final AutenticacionServicio servicio;
+
+    public AutenticacionControlador(AutenticacionServicio servicio) {
         this.servicio = servicio;
-        this.usuarioServicio = usuarioServicio;
     }
 
-    @PostMapping("v1/verificar-usuario")
-    public ResponseEntity<?> verificarUsuario(@Valid @RequestBody UsuarioValidacionPeticion peticion) {
+    
+    @Operation(summary = "Verificar si un usuario existe en el sistema", description = "Verifica la existencia de un usuario por nombre.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuario verificado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
+    @PostMapping("/verificar-usuario")
+    public ResponseEntity<?> verificarUsuario(
+            @Parameter(description = "Petición que contiene el nombre de usuario a verificar.") 
+            @RequestBody UsuarioValidacionPeticion peticion) {
         return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(this.servicio.verificarUsuario(peticion.getUsuario())));
     }
-
-    @PostMapping("v1/iniciar-sesion")
-    public ResponseEntity<?> iniciarSesion(@RequestBody IniciarSesionPeticion peticion) {
+    
+    @Operation(summary = "Iniciar sesión en el sistema", description = "Inicia sesión en el sistema con las credenciales proporcionadas.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Inicio de sesión exitoso"),
+        @ApiResponse(responseCode = "401", description = "Credenciales incorrectas")
+    })
+    @PostMapping("/iniciar-sesion")
+    public ResponseEntity<?> iniciarSesion(
+            @Parameter(description = "Petición que contiene las credenciales del usuario.") 
+            @RequestBody IniciarSesionPeticion peticion) {
         return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(this.servicio.login(peticion.getUsuario(), peticion.getContrasenia())));
     }
 }
