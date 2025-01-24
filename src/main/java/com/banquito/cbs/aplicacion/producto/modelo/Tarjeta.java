@@ -9,7 +9,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "TARJETA")
 public class Tarjeta implements Serializable
@@ -71,8 +75,6 @@ public class Tarjeta implements Serializable
     @ManyToOne
     @JoinColumn(name = "CLIENTE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private Cliente cliente;
-
-    public Tarjeta() {}
 
     public Tarjeta(Integer id) {
         this.id = id;

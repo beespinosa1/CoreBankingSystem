@@ -1,10 +1,9 @@
 package com.banquito.cbs.aplicacion.producto.servicio;
 
+import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.producto.modelo.Cuenta;
 import com.banquito.cbs.aplicacion.producto.repositorio.CuentaRepositorio;
-import com.banquito.cbs.aplicacion.transaccion.modelo.Transaccion;
 import com.banquito.cbs.aplicacion.transaccion.servicio.TransaccionServicio;
-import com.banquito.cbs.compartido.excepciones.EntidadNoEncontradaExcepcion;
 import com.banquito.cbs.compartido.excepciones.OperacionInvalidaExcepcion;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,7 @@ import java.util.List;
 public class CuentaServicio {
     private final CuentaRepositorio repositorio;
     private final TransaccionServicio transaccionServicio;
+    public static final String ENTITY_NAME = "Cuenta";
 
     public static final String TIPO_AHORROS = "AHO";
     public static final String TIPO_CORRIENTE = "COR";
@@ -36,15 +36,21 @@ public class CuentaServicio {
     }
 
     public List<Cuenta> listarPorCliente(Integer clienteId) {
-        return repositorio.findByClienteId(clienteId);
+        List<Cuenta> cuentas = repositorio.findByClienteId(clienteId);
+        if (cuentas.isEmpty()) {
+            throw new NotFoundException(clienteId.toString(), ENTITY_NAME);
+        }
+        return cuentas;
     }
 
     public Cuenta buscarPorId(Integer id) {
-        return repositorio.findById(id).orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ningún con ID: " + id));
+        return repositorio.findById(id)
+                .orElseThrow(() -> new NotFoundException(id.toString(), ENTITY_NAME));
     }
 
     public Cuenta buscarPorNumero(String numeroCuenta) {
-        return this.repositorio.findByNumero(numeroCuenta).orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ninguna cuenta con número: " + numeroCuenta));
+        return this.repositorio.findByNumero(numeroCuenta)
+                .orElseThrow(() -> new NotFoundException(numeroCuenta, ENTITY_NAME));
     }
 
     public void crearCuenta(Cuenta cuenta, BigDecimal depositoInicial) {
