@@ -7,7 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "CUENTA")
 public class Cuenta {
@@ -56,8 +60,6 @@ public class Cuenta {
     @ManyToOne
     @JoinColumn(name = "CLIENTE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private Cliente cliente;
-
-    public Cuenta() {}
 
     public Cuenta(Integer id) {
         this.id = id;

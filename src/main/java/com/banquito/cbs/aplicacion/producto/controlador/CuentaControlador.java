@@ -1,8 +1,11 @@
 package com.banquito.cbs.aplicacion.producto.controlador;
 
 import com.banquito.cbs.aplicacion.producto.controlador.adaptador.CuentaAdaptador;
+import com.banquito.cbs.aplicacion.producto.controlador.DTO.CuentaDTO;
+import com.banquito.cbs.aplicacion.producto.controlador.mapper.CuentaMapper;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearCuentaPeticion;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.DepositoPeticion;
+import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.producto.modelo.Cuenta;
 import com.banquito.cbs.aplicacion.producto.servicio.CuentaServicio;
 import com.banquito.cbs.compartido.utilidades.UtilidadRespuesta;
@@ -17,6 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("v1/cuentas")
 @CrossOrigin("*")
@@ -24,10 +30,12 @@ public class CuentaControlador {
 
     private final CuentaServicio servicio;
     private final CuentaAdaptador adaptador;
+    private final CuentaMapper mapper;
 
-    public CuentaControlador(CuentaServicio servicio, CuentaAdaptador adaptador) {
+    public CuentaControlador(CuentaServicio servicio, CuentaAdaptador adaptador, CuentaMapper mapper) {
         this.servicio = servicio;
         this.adaptador = adaptador;
+        this.mapper = mapper;
     }
 
     @Operation(summary = "Listar cuentas de un cliente", description = "Devuelve todas las cuentas asociadas a un cliente específico.")
@@ -36,10 +44,20 @@ public class CuentaControlador {
                     content = @Content(mediaType = "application/json"))
     })
     @GetMapping
-    public ResponseEntity<?> listar(
+    public ResponseEntity<List<CuentaDTO>> listar(
             @Parameter(description = "ID del cliente cuyas cuentas se desean listar", required = true) 
             @RequestParam("idCliente") Integer idCliente) {
-        return ResponseEntity.status(HttpStatus.OK).body(UtilidadRespuesta.exito(this.servicio.listarPorCliente(idCliente)));
+        try {
+            List<Cuenta> cuentas = this.servicio.listarPorCliente(idCliente);
+            List<CuentaDTO> dtos = new ArrayList<>(cuentas.size());
+            for(Cuenta cuenta : cuentas) {
+                dtos.add(mapper.toDTO(cuenta));
+            }
+            return ResponseEntity.ok(dtos);
+        } catch (NotFoundException nfe) {
+            System.err.println(nfe.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Obtener una cuenta por su ID", description = "Devuelve los detalles de una cuenta específica.")
@@ -49,10 +67,16 @@ public class CuentaControlador {
             @ApiResponse(responseCode = "404", description = "Cuenta no encontrada", content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> mostrar(
+    public ResponseEntity<CuentaDTO> mostrar(
             @Parameter(description = "ID de la cuenta que se desea buscar", required = true) 
             @PathVariable("id") Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(UtilidadRespuesta.exito(this.servicio.buscarPorId(id)));
+        try {
+            Cuenta cuenta = this.servicio.buscarPorId(id);
+            return ResponseEntity.ok(mapper.toDTO(cuenta));
+        } catch (NotFoundException nfe) {
+            System.err.println(nfe.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Crear una nueva cuenta", description = "Permite registrar una nueva cuenta bancaria para un cliente.")
@@ -78,8 +102,8 @@ public class CuentaControlador {
     @PutMapping("/deposito")
     public ResponseEntity<?> depositar(
             @Valid @RequestBody DepositoPeticion peticion) {
-        Cuenta cuenta = this.servicio.buscarPorNumero(peticion.getNumeroCuenta());
-        this.servicio.depositarValores(cuenta, peticion.getValor());
+            Cuenta cuenta = this.servicio.buscarPorNumero(peticion.getNumeroCuenta());
+            this.servicio.depositarValores(cuenta, peticion.getValor());
         return ResponseEntity.status(HttpStatus.OK).body(UtilidadRespuesta.exito(cuenta));
     }
 
@@ -93,8 +117,8 @@ public class CuentaControlador {
     public ResponseEntity<?> activarCuenta(
             @Parameter(description = "ID de la cuenta que se desea activar", required = true) 
             @PathVariable("id") Integer id) {
-        Cuenta cuenta = this.servicio.buscarPorId(id);
-        this.servicio.activarCuenta(cuenta);
+            Cuenta cuenta = this.servicio.buscarPorId(id);
+            this.servicio.activarCuenta(cuenta);
         return ResponseEntity.status(HttpStatus.OK).body(UtilidadRespuesta.exito(cuenta));
     }
 
@@ -108,8 +132,8 @@ public class CuentaControlador {
     public ResponseEntity<?> inactivarCuenta(
             @Parameter(description = "ID de la cuenta que se desea inactivar", required = true) 
             @PathVariable("id") Integer id) {
-        Cuenta cuenta = this.servicio.buscarPorId(id);
-        this.servicio.inactivarCuenta(cuenta);
+            Cuenta cuenta = this.servicio.buscarPorId(id);
+            this.servicio.inactivarCuenta(cuenta);
         return ResponseEntity.status(HttpStatus.OK).body(UtilidadRespuesta.exito(cuenta));
     }
 }

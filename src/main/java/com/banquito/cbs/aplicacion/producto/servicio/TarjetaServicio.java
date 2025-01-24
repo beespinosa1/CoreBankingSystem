@@ -1,5 +1,6 @@
 package com.banquito.cbs.aplicacion.producto.servicio;
 
+import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.producto.modelo.Cuenta;
 import com.banquito.cbs.aplicacion.producto.modelo.Tarjeta;
 import com.banquito.cbs.aplicacion.producto.repositorio.TarjetaRepositorio;
@@ -18,6 +19,7 @@ import java.util.List;
 @Service
 public class TarjetaServicio {
     private final TarjetaRepositorio repositorio;
+    public static final String ENTITY_NAME = "Tarjeta";
 
     public static final String TIPO_CREDITO = "CRE";
     public static final String TIPO_DEBITO = "DEB";
@@ -34,15 +36,21 @@ public class TarjetaServicio {
     }
 
     public List<Tarjeta> listarPorCliente(Integer clienteId) {
-        return repositorio.findByClienteId(clienteId);
+        List<Tarjeta> tarjetas = repositorio.findByClienteId(clienteId);
+        if (tarjetas.isEmpty()) {
+            throw new NotFoundException(clienteId.toString(), ENTITY_NAME);
+        }
+        return tarjetas;
     }
 
     public Tarjeta buscarPorId(Integer id) {
-        return repositorio.findById(id).orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ninguna tarjeta con ID: " + id));
+        return repositorio.findById(id)
+                .orElseThrow(() -> new NotFoundException(id.toString(), ENTITY_NAME));
     }
 
     public Tarjeta buscarPorNumero(String numeroTarjeta) {
-        return repositorio.findByNumero(numeroTarjeta).orElseThrow(() -> new EntidadNoEncontradaExcepcion("No existe ninguna tarjeta con número: " + numeroTarjeta));
+        return repositorio.findByNumero(numeroTarjeta)
+                .orElseThrow(() -> new NotFoundException(numeroTarjeta, ENTITY_NAME));
     }
 
     public void crearTarjeta(Tarjeta tarjeta) throws Exception {
