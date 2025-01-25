@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 @RequestMapping("v1/personas-naturales")
 @CrossOrigin("*")
 public class PersonaNaturalControlador {
@@ -31,31 +33,31 @@ public class PersonaNaturalControlador {
     private final PersonaNaturalAdaptador adaptador;
     private final PersonaNaturalMapper mapper;
 
-    public PersonaNaturalControlador(PersonaNaturalServicio servicio, PersonaNaturalAdaptador adaptador, PersonaNaturalMapper mapper) {
+    public PersonaNaturalControlador(PersonaNaturalServicio servicio, PersonaNaturalAdaptador adaptador,
+            PersonaNaturalMapper mapper) {
         this.servicio = servicio;
         this.adaptador = adaptador;
         this.mapper = mapper;
     }
 
-    @Operation(summary = "Listar personas naturales", description = "Devuelve una lista de todas las personas naturales registradas.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de personas naturales obtenida exitosamente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaNaturalDTO.class)))
-    })
     @GetMapping
     public ResponseEntity<List<PersonaNaturalDTO>> listar() {
-        List<PersonaNatural> personas = this.servicio.listar();
-        List<PersonaNaturalDTO> dtos = new ArrayList<>(personas.size());
-        for (PersonaNatural persona : personas) {
-            dtos.add(mapper.toDTO(persona));
+        try {
+            List<PersonaNatural> personas = this.servicio.listar();
+            List<PersonaNaturalDTO> dtos = new ArrayList<>(personas.size());
+            for (PersonaNatural persona : personas) {
+                dtos.add(mapper.toDTO(persona));
+            }
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            log.error("Error al listar personas naturales", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(dtos);
     }
 
     @Operation(summary = "Obtener una persona natural por su ID", description = "Devuelve los detalles de una persona natural específica.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Persona natural encontrada",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaNaturalDTO.class))),
+            @ApiResponse(responseCode = "200", description = "Persona natural encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaNaturalDTO.class))),
             @ApiResponse(responseCode = "404", description = "Persona natural no encontrada", content = @Content)
     })
     @GetMapping("/{id}")
@@ -65,15 +67,16 @@ public class PersonaNaturalControlador {
             PersonaNatural persona = this.servicio.buscarPorId(id);
             return ResponseEntity.ok(this.mapper.toDTO(persona));
         } catch (NotFoundException nfe) {
-            System.err.println(nfe.getMessage());
+            // System.err.println(nfe.getMessage());
+            log.error("Persona natural con ID {} no encontrada", id, nfe);
             return ResponseEntity.notFound().build();
         }
     }
 
+    // No se maneja excepciones
     @Operation(summary = "Crear una nueva persona natural", description = "Permite registrar una nueva persona natural.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Persona natural creada exitosamente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaNaturalDTO.class))),
+            @ApiResponse(responseCode = "201", description = "Persona natural creada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaNaturalDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos de la solicitud inválidos", content = @Content)
     })
     @PostMapping
@@ -86,17 +89,21 @@ public class PersonaNaturalControlador {
 
     @Operation(summary = "Modificar una persona natural existente", description = "Permite actualizar los datos de una persona natural específica.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Persona natural actualizada exitosamente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaNaturalDTO.class))),
+            @ApiResponse(responseCode = "200", description = "Persona natural actualizada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaNaturalDTO.class))),
             @ApiResponse(responseCode = "404", description = "Persona natural no encontrada", content = @Content)
     })
     @PutMapping("/{id}")
     public ResponseEntity<?> modificar(
             @Parameter(description = "ID de la persona natural que se desea actualizar", required = true) @PathVariable Integer id,
             @Valid @RequestBody PersonaNaturalPeticion campos) {
-        PersonaNatural persona = this.adaptador.peticionAPersonaNatural(id, campos);
-        this.servicio.actualizar(persona);
-        return ResponseEntity.ok(mapper.toDTO(persona));
+        try {
+            PersonaNatural persona = this.adaptador.peticionAPersonaNatural(id, campos);
+            this.servicio.actualizar(persona);
+            return ResponseEntity.ok(mapper.toDTO(persona));
+        } catch (Exception e) {
+            log.error("Error al modificar persona natural con ID " + id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor");
+        }
     }
 
     @Operation(summary = "Eliminar una persona natural", description = "Permite eliminar una persona natural específica.")
@@ -107,7 +114,15 @@ public class PersonaNaturalControlador {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(
             @Parameter(description = "ID de la persona natural que se desea eliminar", required = true) @PathVariable Integer id) {
-        this.servicio.eliminar(servicio.buscarPorId(id));
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        try {
+            this.servicio.eliminar(servicio.buscarPorId(id));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (NotFoundException nfe) {
+            log.error("Persona natural con ID " + id + " no encontrada para eliminar", nfe);
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Error al eliminar persona natural con ID " + id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor");
+        }
     }
 }
