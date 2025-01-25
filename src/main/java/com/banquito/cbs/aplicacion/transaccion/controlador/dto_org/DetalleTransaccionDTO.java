@@ -1,4 +1,4 @@
-package com.banquito.cbs.aplicacion.transaccion.controlador.DTO;
+package com.banquito.cbs.aplicacion.transaccion.controlador.dto_org;
 
 import java.time.LocalDate;
 import java.util.Map;

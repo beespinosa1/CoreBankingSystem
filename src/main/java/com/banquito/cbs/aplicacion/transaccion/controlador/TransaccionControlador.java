@@ -1,48 +1,44 @@
 package com.banquito.cbs.aplicacion.transaccion.controlador;
 
-import com.banquito.cbs.aplicacion.transaccion.controlador.adaptador.TransaccionAdaptador;
-import com.banquito.cbs.aplicacion.transaccion.controlador.DTO.TransaccionDTO;
 import com.banquito.cbs.aplicacion.transaccion.controlador.mapper.TransaccionMapper;
-import com.banquito.cbs.aplicacion.transaccion.controlador.peticion.ConsumoPeticion;
-import com.banquito.cbs.aplicacion.transaccion.controlador.peticion.ConsumoValidacionPeticion;
-import com.banquito.cbs.aplicacion.transaccion.excepcion.NotFoundException;
+import com.banquito.cbs.aplicacion.transaccion.dto.TransaccionDto;
 import com.banquito.cbs.aplicacion.transaccion.modelo.Transaccion;
 import com.banquito.cbs.aplicacion.transaccion.servicio.TransaccionServicio;
 import com.banquito.cbs.compartido.utilidades.UtilidadObjeto;
 import com.banquito.cbs.compartido.utilidades.UtilidadRespuesta;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("v1/transacciones")
 @CrossOrigin("*")
+@Slf4j
 public class TransaccionControlador {
 
     private final TransaccionServicio servicio;
-    private final TransaccionAdaptador adaptador;
     private final TransaccionMapper mapper;
 
-    public TransaccionControlador(TransaccionServicio servicio, TransaccionAdaptador adaptador, TransaccionMapper mapper) {
+    public TransaccionControlador(TransaccionServicio servicio, TransaccionMapper mapper) {
         this.servicio = servicio;
-        this.adaptador = adaptador;
         this.mapper = mapper;
     }
 
-    @Operation(summary = "Listar movimientos de una cuenta", description = "Devuelve todos los movimientos asociados a una cuenta específica.")
+    /*@Operation(summary = "Listar movimientos de una cuenta", description = "Devuelve todos los movimientos asociados a una cuenta específica.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Movimientos listados exitosamente",
                     content = @Content(mediaType = "application/json")),
@@ -84,7 +80,7 @@ public class TransaccionControlador {
             System.err.println(nfe.getMessage());
             return ResponseEntity.notFound().build();
         }
-    }
+    }*/
 
     @Operation(summary = "Registrar consumo con tarjeta", description = "Permite registrar un consumo con tarjeta de crédito o débito.")
     @ApiResponses(value = {
@@ -95,16 +91,16 @@ public class TransaccionControlador {
     @PostMapping("/consumo-tarjeta")
     public ResponseEntity<?> registrarConsumoTarjeta(
             @Parameter(description = "Detalles del consumo a registrar", required = true) 
-            @Valid @RequestBody ConsumoPeticion peticion) throws IllegalAccessException {
-        Transaccion transaccion = this.adaptador.consumoATransaccion(peticion);
+            @Valid @RequestBody TransaccionDto peticion) throws IllegalAccessException {
+        Transaccion transaccion = this.mapper.toPersistence(peticion);
+
         this.servicio.registrarConsumoTarjeta(
                 transaccion,
                 peticion.getNumeroTarjeta(),
-                peticion.getCvv(),
-                peticion.getFechaCaducidad(),
                 peticion.getDescripcion(),
                 peticion.getNumeroCuenta(),
-                peticion.getBeneficiario()
+                peticion.getTieneIntereses(),
+                peticion.getCuotas()
         );
 
         BigDecimal valorAcreditar = this.servicio.cobrarComisionesConsumo(transaccion, UtilidadObjeto.convertToMap(peticion.getDetalle()));
@@ -112,33 +108,6 @@ public class TransaccionControlador {
 
         Map<String, String> respuesta = new HashMap<>();
         respuesta.put("mensaje", "Transacción exitosa");
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(respuesta));
-    }
-
-    @Operation(summary = "Validar consumo con tarjeta", description = "Permite validar si un consumo con tarjeta es válido.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Consumo validado exitosamente",
-                    content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "400", description = "Datos de la solicitud inválidos", content = @Content)
-    })
-    @PostMapping("/consumo-tarjeta/validar")
-    public ResponseEntity<?> validarConsumo(
-            @Parameter(description = "Detalles del consumo a validar", required = true) 
-            @Valid @RequestBody ConsumoValidacionPeticion peticion) throws IllegalAccessException {
-        Transaccion transaccion = this.adaptador.validacionATransaccion(peticion);
-        this.servicio.validarTransaccion(
-                transaccion,
-                peticion.getNumeroTarjeta(),
-                peticion.getCvv(),
-                peticion.getFechaCaducidad(),
-                peticion.getDescripcion(),
-                peticion.getNumeroCuenta(),
-                peticion.getBeneficiario()
-        );
-
-        Map<String, String> respuesta = new HashMap<>();
-        respuesta.put("mensaje", "Transacción válida");
 
         return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(respuesta));
     }
