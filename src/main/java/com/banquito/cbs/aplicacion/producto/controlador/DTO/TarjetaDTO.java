@@ -53,7 +53,7 @@ public class TarjetaDTO {
     private LocalDate fechaEmision;
     
     @NotBlank(message = "El estado es requerido")
-    @Pattern(regexp = "ACT|INA", message = "El estado debe ser ACT o INA")
+    @Pattern(regexp = "ACT|INA|BLO", message = "El estado debe ser ACT, INA O BLO")
     private String estado;
     
     @PastOrPresent(message = "La fecha de creación no puede ser futura")

@@ -29,7 +29,7 @@ public class ClienteDTO {
     private BigDecimal ingresoPromedioMensual;
     
     @NotBlank(message = "El estado es requerido")
-    @Pattern(regexp = "ACT|INA", message = "El estado debe ser ACT, INA")
+    @Pattern(regexp = "ACT|INA|BLO", message = "El estado debe ser ACT, INA o BLO")
     private String estado;
     
     @PastOrPresent(message = "La fecha de creación no puede ser futura")
