@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
-import com.banquito.cbs.aplicacion.cliente.controlador.DTO.ClienteDTO;
+import com.banquito.cbs.aplicacion.cliente.controlador.dto.ClienteDto;
 import com.banquito.cbs.aplicacion.cliente.modelo.Cliente;
 
 @Mapper(
@@ -12,8 +12,6 @@ import com.banquito.cbs.aplicacion.cliente.modelo.Cliente;
     unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface ClienteMapper {
-
-    ClienteDTO toDTO(Cliente model);
-    Cliente toModel(ClienteDTO clienteDTO);
-
-} 
+    ClienteDto toDTO(Cliente model);
+    Cliente toModel(ClienteDto clienteDTO);
+}

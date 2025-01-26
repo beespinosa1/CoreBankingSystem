@@ -1,6 +1,6 @@
 package com.banquito.cbs.aplicacion.cliente.controlador;
 
-import com.banquito.cbs.aplicacion.cliente.controlador.DTO.ClienteDTO;
+import com.banquito.cbs.aplicacion.cliente.controlador.dto.ClienteDto;
 import com.banquito.cbs.aplicacion.cliente.controlador.adaptador.ClienteAdaptador;
 import com.banquito.cbs.aplicacion.cliente.controlador.mapper.ClienteMapper;
 import com.banquito.cbs.aplicacion.cliente.controlador.peticion.ClientePeticion;
@@ -34,11 +34,11 @@ public class ClienteControlador {
     @Operation(summary = "Obtener un cliente por su ID", description = "Devuelve los detalles de un cliente específico basado en su ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cliente encontrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDto.class))),
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteDTO> mostrar(
+    public ResponseEntity<ClienteDto> mostrar(
             @Parameter(description = "ID del cliente que se desea buscar", required = true) @PathVariable("id") Integer id) {
         try {
             Cliente cliente = this.servicio.buscarPorId(id);
@@ -52,7 +52,7 @@ public class ClienteControlador {
     @Operation(summary = "Modificar un cliente existente", description = "Permite actualizar los datos de un cliente basado en su ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cliente actualizado exitosamente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDTO.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDto.class))),
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
     })
     @PutMapping("/{id}")

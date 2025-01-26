@@ -1,4 +1,4 @@
-package com.banquito.cbs.aplicacion.cliente.controlador.DTO;
+package com.banquito.cbs.aplicacion.cliente.controlador.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClienteDTO {
+public class ClienteDto {
     
     private Integer id;
     

@@ -6,5 +6,5 @@ import lombok.Data;
 public class DetalleTransaccionDto {
     private ItemDetalleTransaccionDto gtw;
     private ItemDetalleTransaccionDto processor;
-    private ItemDetalleTransaccionDto  marca;
+    private ItemDetalleTransaccionDto marca;
 }

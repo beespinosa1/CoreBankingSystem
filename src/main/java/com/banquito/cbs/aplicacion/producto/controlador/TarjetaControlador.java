@@ -1,7 +1,7 @@
 package com.banquito.cbs.aplicacion.producto.controlador;
 
 import com.banquito.cbs.aplicacion.producto.controlador.adaptador.TarjetaAdaptador;
-import com.banquito.cbs.aplicacion.producto.controlador.DTO.TarjetaDTO;
+import com.banquito.cbs.aplicacion.producto.controlador.dto.TarjetaDTO;
 import com.banquito.cbs.aplicacion.producto.controlador.mapper.TarjetaMapper;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearTarjetaPeticion;
 import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;

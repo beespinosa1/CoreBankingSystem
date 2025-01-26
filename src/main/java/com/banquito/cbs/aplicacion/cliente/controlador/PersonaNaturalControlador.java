@@ -1,6 +1,6 @@
 package com.banquito.cbs.aplicacion.cliente.controlador;
 
-import com.banquito.cbs.aplicacion.cliente.controlador.DTO.PersonaNaturalDTO;
+import com.banquito.cbs.aplicacion.cliente.controlador.dto.PersonaNaturalDTO;
 import com.banquito.cbs.aplicacion.cliente.controlador.adaptador.PersonaNaturalAdaptador;
 import com.banquito.cbs.aplicacion.cliente.controlador.mapper.PersonaNaturalMapper;
 import com.banquito.cbs.aplicacion.cliente.controlador.peticion.PersonaNaturalPeticion;

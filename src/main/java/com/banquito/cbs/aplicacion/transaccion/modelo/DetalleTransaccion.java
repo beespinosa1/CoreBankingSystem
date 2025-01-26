@@ -3,7 +3,6 @@ package com.banquito.cbs.aplicacion.transaccion.modelo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 import java.io.IOException;
 import java.io.Serializable;

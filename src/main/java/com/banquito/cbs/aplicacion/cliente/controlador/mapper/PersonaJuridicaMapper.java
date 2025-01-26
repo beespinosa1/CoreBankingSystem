@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
-import com.banquito.cbs.aplicacion.cliente.controlador.DTO.PersonaJuridicaDTO;
+import com.banquito.cbs.aplicacion.cliente.controlador.dto.PersonaJuridicaDTO;
 import com.banquito.cbs.aplicacion.cliente.modelo.PersonaJuridica;
 
 @Mapper(

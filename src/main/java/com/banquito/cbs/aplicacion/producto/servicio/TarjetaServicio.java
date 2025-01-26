@@ -1,12 +1,9 @@
 package com.banquito.cbs.aplicacion.producto.servicio;
 
 import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
-import com.banquito.cbs.aplicacion.producto.modelo.Cuenta;
 import com.banquito.cbs.aplicacion.producto.modelo.Tarjeta;
 import com.banquito.cbs.aplicacion.producto.repositorio.TarjetaRepositorio;
-import com.banquito.cbs.compartido.excepciones.EntidadNoEncontradaExcepcion;
 import com.banquito.cbs.compartido.excepciones.OperacionInvalidaExcepcion;
-import com.banquito.cbs.compartido.utilidades.UtilidadCriptografia;
 import com.banquito.cbs.compartido.utilidades.UtilidadHash;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.banquito.cbs.aplicacion.cliente.controlador.DTO;
+package com.banquito.cbs.aplicacion.cliente.controlador.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DireccionDTO {
+public class DireccionDto {
     
     private Integer id;
     

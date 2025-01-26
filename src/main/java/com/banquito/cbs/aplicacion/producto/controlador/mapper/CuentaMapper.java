@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
-import com.banquito.cbs.aplicacion.producto.controlador.DTO.CuentaDTO;
+import com.banquito.cbs.aplicacion.producto.controlador.dto.CuentaDTO;
 import com.banquito.cbs.aplicacion.producto.modelo.Cuenta;
 
 @Mapper(

@@ -1,7 +1,7 @@
 package com.banquito.cbs.aplicacion.producto.controlador;
 
 import com.banquito.cbs.aplicacion.producto.controlador.adaptador.CuentaAdaptador;
-import com.banquito.cbs.aplicacion.producto.controlador.DTO.CuentaDTO;
+import com.banquito.cbs.aplicacion.producto.controlador.dto.CuentaDTO;
 import com.banquito.cbs.aplicacion.producto.controlador.mapper.CuentaMapper;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearCuentaPeticion;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.DepositoPeticion;

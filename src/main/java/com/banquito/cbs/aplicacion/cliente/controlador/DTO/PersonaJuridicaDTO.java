@@ -1,4 +1,4 @@
-package com.banquito.cbs.aplicacion.cliente.controlador.DTO;
+package com.banquito.cbs.aplicacion.cliente.controlador.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,10 +11,8 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonaJuridicaDTO {
-    
+public class PersonaJuridicaDto {
     private Integer id;
-    
     private Integer personaNaturalId;
     
     @NotBlank(message = "El RUC es requerido")
@@ -48,5 +46,5 @@ public class PersonaJuridicaDTO {
     @PastOrPresent(message = "La fecha de actualización no puede ser futura")
     private LocalDateTime fechaActualizacion;
     
-    private PersonaNaturalDTO personaNatural;
+    private PersonaNaturalDto personaNatural;
 } 
