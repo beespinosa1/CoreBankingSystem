@@ -7,13 +7,11 @@ import org.mapstruct.ReportingPolicy;
 import com.banquito.cbs.aplicacion.cliente.controlador.dto.DireccionDto;
 import com.banquito.cbs.aplicacion.cliente.modelo.Direccion;
 
-@Mapper(
-    componentModel = MappingConstants.ComponentModel.SPRING,
-    unmappedTargetPolicy = ReportingPolicy.IGNORE
-)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DireccionMapper {
 
-    DireccionDto toDTO(Direccion model);
-    Direccion toModel(DireccionDto direccionDTO);
+    DireccionDto toDto(Direccion model);
 
-} 
+    Direccion toModel(DireccionDto direccionDto);
+
+}

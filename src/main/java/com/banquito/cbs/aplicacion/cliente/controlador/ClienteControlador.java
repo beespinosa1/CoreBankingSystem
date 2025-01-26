@@ -36,8 +36,7 @@ public class ClienteControlador {
 
     @Operation(summary = "Obtener un cliente por su ID", description = "Devuelve los detalles de un cliente específico basado en su ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente encontrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDto.class))),
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDto.class))),
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
     })
     @GetMapping("/{id}")
@@ -45,7 +44,7 @@ public class ClienteControlador {
             @Parameter(description = "ID del cliente que se desea buscar", required = true) @PathVariable("id") Integer id) {
         try {
             Cliente cliente = this.servicio.buscarPorId(id);
-            return ResponseEntity.ok(this.mapper.toDTO(cliente));
+            return ResponseEntity.ok(this.mapper.toDto(cliente));
         } catch (NotFoundException nfe) {
             // System.err.println(nfe.getMessage());
             log.error("Error al buscar cliente con ID {}: no encontrado.", id, nfe);
@@ -55,8 +54,7 @@ public class ClienteControlador {
 
     @Operation(summary = "Modificar un cliente existente", description = "Permite actualizar los datos de un cliente basado en su ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente actualizado exitosamente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDto.class))),
+            @ApiResponse(responseCode = "200", description = "Cliente actualizado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteDto.class))),
             @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
     })
     @PutMapping("/{id}")
@@ -66,7 +64,7 @@ public class ClienteControlador {
         try {
             Cliente cliente = this.adaptador.peticionADireccion(id, peticion);
             this.servicio.actualizar(cliente);
-            return ResponseEntity.ok(mapper.toDTO(cliente));
+            return ResponseEntity.ok(mapper.toDto(cliente));
         } catch (NotFoundException nfe) {
             log.error("Error al modificar cliente con ID {}: no encontrado.", id, nfe);
             return ResponseEntity.status(404).body("Cliente no encontrado");

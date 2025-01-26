@@ -38,60 +38,81 @@ public class TransaccionControlador {
         this.mapper = mapper;
     }
 
-    /*@Operation(summary = "Listar movimientos de una cuenta", description = "Devuelve todos los movimientos asociados a una cuenta específica.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Movimientos listados exitosamente",
-                    content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Cuenta no encontrada", content = @Content)
-    })
-    @GetMapping("/cuenta/{id}")
-    public ResponseEntity<List<TransaccionDTO>> listarMovimientosCuenta(@Parameter(description = "ID de la cuenta cuyos movimientos se desean listar", required = true)
-                                                                        @PathVariable("id") Integer id) {
-        try {
-            List<Transaccion> transacciones = this.servicio.listarPorCuenta(id);
-            List<TransaccionDTO> dtos = new ArrayList<>(transacciones.size());
-            for(Transaccion transaccion : transacciones) {
-                dtos.add(mapper.toDTO(transaccion));
-            }
-            return ResponseEntity.ok(dtos);
-        } catch (NotFoundException nfe) {
-            System.err.println(nfe.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @Operation(summary = "Listar movimientos de una tarjeta", description = "Devuelve todos los movimientos asociados a una tarjeta específica.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Movimientos listados exitosamente",
-                    content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada", content = @Content)
-    })
-    @GetMapping("/tarjeta/{id}")
-    public ResponseEntity<List<TransaccionDTO>> listarMovimientosTarjeta(@Parameter(description = "ID de la tarjeta cuyos movimientos se desean listar", required = true) 
-                                                                         @PathVariable("id") Integer id) {
-        try {
-            List<Transaccion> transacciones = this.servicio.listarPorTarjeta(id);
-            List<TransaccionDTO> dtos = new ArrayList<>(transacciones.size());
-            for(Transaccion transaccion : transacciones) {
-                dtos.add(mapper.toDTO(transaccion));
-            }
-            return ResponseEntity.ok(dtos);
-        } catch (NotFoundException nfe) {
-            System.err.println(nfe.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-    }*/
+    /*
+     * @Operation(summary = "Listar movimientos de una cuenta", description =
+     * "Devuelve todos los movimientos asociados a una cuenta específica.")
+     * 
+     * @ApiResponses(value = {
+     * 
+     * @ApiResponse(responseCode = "200", description =
+     * "Movimientos listados exitosamente",
+     * content = @Content(mediaType = "application/json")),
+     * 
+     * @ApiResponse(responseCode = "404", description = "Cuenta no encontrada",
+     * content = @Content)
+     * })
+     * 
+     * @GetMapping("/cuenta/{id}")
+     * public ResponseEntity<List<TransaccionDto>>
+     * listarMovimientosCuenta(@Parameter(description =
+     * "ID de la cuenta cuyos movimientos se desean listar", required = true)
+     * 
+     * @PathVariable("id") Integer id) {
+     * try {
+     * List<Transaccion> transacciones = this.servicio.listarPorCuenta(id);
+     * List<TransaccionDto> dtos = new ArrayList<>(transacciones.size());
+     * for(Transaccion transaccion : transacciones) {
+     * dtos.add(mapper.toDto(transaccion));
+     * }
+     * return ResponseEntity.ok(dtos);
+     * } catch (NotFoundException nfe) {
+     * System.err.println(nfe.getMessage());
+     * return ResponseEntity.notFound().build();
+     * }
+     * }
+     * 
+     * @Operation(summary = "Listar movimientos de una tarjeta", description =
+     * "Devuelve todos los movimientos asociados a una tarjeta específica.")
+     * 
+     * @ApiResponses(value = {
+     * 
+     * @ApiResponse(responseCode = "200", description =
+     * "Movimientos listados exitosamente",
+     * content = @Content(mediaType = "application/json")),
+     * 
+     * @ApiResponse(responseCode = "404", description = "Tarjeta no encontrada",
+     * content = @Content)
+     * })
+     * 
+     * @GetMapping("/tarjeta/{id}")
+     * public ResponseEntity<List<TransaccionDto>>
+     * listarMovimientosTarjeta(@Parameter(description =
+     * "ID de la tarjeta cuyos movimientos se desean listar", required = true)
+     * 
+     * @PathVariable("id") Integer id) {
+     * try {
+     * List<Transaccion> transacciones = this.servicio.listarPorTarjeta(id);
+     * List<TransaccionDto> dtos = new ArrayList<>(transacciones.size());
+     * for(Transaccion transaccion : transacciones) {
+     * dtos.add(mapper.toDto(transaccion));
+     * }
+     * return ResponseEntity.ok(dtos);
+     * } catch (NotFoundException nfe) {
+     * System.err.println(nfe.getMessage());
+     * return ResponseEntity.notFound().build();
+     * }
+     * }
+     */
 
     @Operation(summary = "Registrar consumo con tarjeta", description = "Permite registrar un consumo con tarjeta de crédito o débito.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Consumo registrado exitosamente",
-                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "201", description = "Consumo registrado exitosamente", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "Datos de la solicitud inválidos", content = @Content)
     })
     @PostMapping("/consumo-tarjeta")
     public ResponseEntity<?> registrarConsumoTarjeta(
-            @Parameter(description = "Detalles del consumo a registrar", required = true) 
-            @Valid @RequestBody TransaccionDto peticion) throws IllegalAccessException {
+            @Parameter(description = "Detalles del consumo a registrar", required = true) @Valid @RequestBody TransaccionDto peticion)
+            throws IllegalAccessException {
         Transaccion transaccion = this.mapper.toPersistence(peticion);
 
         this.servicio.registrarConsumoTarjeta(
@@ -100,10 +121,10 @@ public class TransaccionControlador {
                 peticion.getDescripcion(),
                 peticion.getNumeroCuenta(),
                 peticion.getTieneIntereses(),
-                peticion.getCuotas()
-        );
+                peticion.getCuotas());
 
-        BigDecimal valorAcreditar = this.servicio.cobrarComisionesConsumo(transaccion, UtilidadObjeto.convertToMap(peticion.getDetalle()));
+        BigDecimal valorAcreditar = this.servicio.cobrarComisionesConsumo(transaccion,
+                UtilidadObjeto.convertToMap(peticion.getDetalle()));
         this.servicio.enviarDineroBeneficiarioConsumo(transaccion, valorAcreditar);
 
         Map<String, String> respuesta = new HashMap<>();

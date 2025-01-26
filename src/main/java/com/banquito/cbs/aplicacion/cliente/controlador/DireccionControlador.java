@@ -46,11 +46,11 @@ public class DireccionControlador {
 
         @Operation(summary = "Listar direcciones de un cliente", description = "Devuelve una lista de direcciones asociadas a un cliente especificado por su ID.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Direcciones encontradas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DireccionDTO.class))),
+                        @ApiResponse(responseCode = "200", description = "Direcciones encontradas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DireccionDto.class))),
                         @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
         })
         @GetMapping
-        public ResponseEntity<List<DireccionDTO>> listar(
+        public ResponseEntity<List<DireccionDto>> listar(
                         @Parameter(description = "ID del cliente cuyas direcciones se desean listar", required = true) @RequestParam("idCliente") Integer idCliente) {
                 try {
                         Cliente cliente = clienteServicio.buscarPorId(idCliente);
@@ -58,9 +58,9 @@ public class DireccionControlador {
                                         ? this.servicio.buscarPorPersonaJuridica(cliente.getPersonaJuridica())
                                         : this.servicio.buscarPorPersonaNatural(cliente.getPersonaNatural());
 
-                        List<DireccionDTO> dtos = new ArrayList<>(direcciones.size());
+                        List<DireccionDto> dtos = new ArrayList<>(direcciones.size());
                         for (Direccion direccion : direcciones) {
-                                dtos.add(mapper.toDTO(direccion));
+                                dtos.add(mapper.toDto(direccion));
                         }
                         return ResponseEntity.ok(dtos);
                 } catch (NotFoundException nfe) {
@@ -74,15 +74,15 @@ public class DireccionControlador {
 
         @Operation(summary = "Obtener una dirección por su ID", description = "Devuelve los detalles de una dirección específica.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Dirección encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DireccionDTO.class))),
+                        @ApiResponse(responseCode = "200", description = "Dirección encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DireccionDto.class))),
                         @ApiResponse(responseCode = "404", description = "Dirección no encontrada", content = @Content)
         })
         @GetMapping("/{id}")
-        public ResponseEntity<DireccionDTO> mostrar(
+        public ResponseEntity<DireccionDto> mostrar(
                         @Parameter(description = "ID de la dirección que se desea buscar", required = true) @PathVariable("id") Integer id) {
                 try {
                         Direccion direccion = this.servicio.buscarPorId(id);
-                        return ResponseEntity.ok(this.mapper.toDTO(direccion));
+                        return ResponseEntity.ok(this.mapper.toDto(direccion));
                 } catch (NotFoundException nfe) {
                         // System.err.println(nfe.getMessage());
                         log.error("Dirección no encontrada para el ID: {}", id, nfe);
@@ -93,7 +93,7 @@ public class DireccionControlador {
         // Error gestionado por Valid
         @Operation(summary = "Crear una nueva dirección", description = "Permite registrar una nueva dirección asociada a un cliente.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "201", description = "Dirección creada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DireccionDTO.class))),
+                        @ApiResponse(responseCode = "201", description = "Dirección creada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DireccionDto.class))),
                         @ApiResponse(responseCode = "400", description = "Datos de la solicitud inválidos", content = @Content)
         })
         @PostMapping
@@ -101,12 +101,12 @@ public class DireccionControlador {
                         @Valid @RequestBody DireccionPeticion peticion) {
                 Direccion direccion = this.adaptador.peticionADireccion(peticion);
                 this.servicio.crear(direccion);
-                return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDTO(direccion));
+                return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(direccion));
         }
 
         @Operation(summary = "Editar una dirección existente", description = "Permite actualizar los datos de una dirección específica.")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Dirección actualizada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DireccionDTO.class))),
+                        @ApiResponse(responseCode = "200", description = "Dirección actualizada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DireccionDto.class))),
                         @ApiResponse(responseCode = "404", description = "Dirección no encontrada", content = @Content)
         })
         @PutMapping("/{id}")
@@ -116,7 +116,7 @@ public class DireccionControlador {
                 try {
                         Direccion direccion = this.adaptador.peticionADireccion(id, peticion);
                         this.servicio.actualizar(direccion);
-                        return ResponseEntity.ok(mapper.toDTO(direccion));
+                        return ResponseEntity.ok(mapper.toDto(direccion));
                 } catch (Exception e) {
                         // Log de error si algo sale mal
                         log.error("Error al intentar actualizar la dirección con ID: " + id, e);

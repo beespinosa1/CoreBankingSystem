@@ -1,4 +1,4 @@
-package com.banquito.cbs.aplicacion.transaccion.controlador.dto_org;
+package com.banquito.cbs.aplicacion.transaccion.controlador.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransaccionDTO {
+public class TransaccionDto {
     private Integer id;
     private Integer cuentaId;
     private Integer tarjetaId;
@@ -43,5 +43,5 @@ public class TransaccionDTO {
     private LocalDateTime fechaCreacion;
     @PastOrPresent(message = "La fecha de actualización no puede ser futura")
     private LocalDateTime fechaActualizacion;
-    private DetalleTransaccionDTO detalleTransaccion;
-} 
+    private DetalleTransaccionDto detalleTransaccion;
+}

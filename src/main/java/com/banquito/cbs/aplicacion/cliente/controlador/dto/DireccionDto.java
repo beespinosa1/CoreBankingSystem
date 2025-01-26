@@ -49,7 +49,7 @@ public class DireccionDto {
     @Size(max = 256, message = "El detalle no puede exceder los 256 caracteres")
     private String detalle;
     
-    private PersonaNaturalDTO personaNatural;
+    private PersonaNaturalDto personaNatural;
     
-    private PersonaJuridicaDTO personaJuridica;
+    private PersonaJuridicaDto personaJuridica;
 } 

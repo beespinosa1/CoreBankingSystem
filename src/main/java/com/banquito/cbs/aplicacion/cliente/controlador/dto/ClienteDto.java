@@ -38,7 +38,7 @@ public class ClienteDto {
     @PastOrPresent(message = "La fecha de actualización no puede ser futura")
     private LocalDateTime fechaActualizacion;
     
-    private PersonaNaturalDTO personaNatural;
+    private PersonaNaturalDto personaNatural;
     
-    private PersonaJuridicaDTO personaJuridica;
+    private PersonaJuridicaDto personaJuridica;
 } 
