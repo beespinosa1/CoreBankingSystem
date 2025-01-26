@@ -1,7 +1,9 @@
 package com.banquito.cbs.aplicacion.producto.controlador;
 
+import com.banquito.cbs.aplicacion.cliente.modelo.Cliente;
+import com.banquito.cbs.aplicacion.cliente.servicio.ClienteServicio;
 import com.banquito.cbs.aplicacion.producto.controlador.adaptador.TarjetaAdaptador;
-import com.banquito.cbs.aplicacion.producto.controlador.dto.TarjetaDto;
+import com.banquito.cbs.aplicacion.producto.dto.TarjetaDto;
 import com.banquito.cbs.aplicacion.producto.controlador.mapper.TarjetaMapper;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearTarjetaPeticion;
 import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("v1/tarjetas")
+@RequestMapping("/v1/tarjetas")
 @CrossOrigin("*")
 public class TarjetaControlador {
 
@@ -29,10 +31,18 @@ public class TarjetaControlador {
         private final TarjetaAdaptador adaptador;
         private final TarjetaMapper mapper;
 
-        public TarjetaControlador(TarjetaServicio servicio, TarjetaAdaptador adaptador, TarjetaMapper mapper) {
+        private final ClienteServicio clienteServicio;
+
+        public TarjetaControlador(
+                TarjetaServicio servicio,
+                TarjetaAdaptador adaptador,
+                TarjetaMapper mapper,
+                ClienteServicio clienteServicio
+        ) {
                 this.servicio = servicio;
                 this.adaptador = adaptador;
                 this.mapper = mapper;
+                this.clienteServicio = clienteServicio;
         }
 
         @Operation(summary = "Listar tarjetas de un cliente", description = "Devuelve todas las tarjetas asociadas a un cliente específico.")
@@ -80,11 +90,11 @@ public class TarjetaControlador {
         })
         @PostMapping
         public ResponseEntity<?> almacenar(
-                        @Parameter(description = "Datos necesarios para crear la tarjeta", required = true) @RequestBody CrearTarjetaPeticion peticion)
-                        throws Exception {
-                Tarjeta tarjeta = this.adaptador.peticionCreacionATarjeta(peticion);
-                this.servicio.crearTarjeta(tarjeta);
-                return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(tarjeta));
+                @Parameter(description = "Datos necesarios para crear la tarjeta", required = true) @RequestBody CrearTarjetaPeticion peticion
+        ) {
+                Cliente cliente = this.clienteServicio.buscarPorId(peticion.getClienteId());
+                this.servicio.crearTarjeta(cliente,TarjetaServicio.TIPO_CREDITO, peticion.getFranquicia(), peticion.getLimiteCredito(), peticion.getCorte());
+                return null;
         }
 
         @Operation(summary = "Activar una tarjeta", description = "Permite activar una tarjeta específica.")

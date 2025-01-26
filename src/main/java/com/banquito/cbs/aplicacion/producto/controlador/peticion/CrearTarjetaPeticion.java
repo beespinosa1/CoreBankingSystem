@@ -3,9 +3,13 @@ package com.banquito.cbs.aplicacion.producto.controlador.peticion;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+@Data
+@NoArgsConstructor
 public class CrearTarjetaPeticion
 {
     @NotBlank
@@ -23,15 +27,8 @@ public class CrearTarjetaPeticion
     @NotNull
     private Integer corte;
 
-    public Integer getClienteId() {
-        return clienteId;
-    }
-
-    public BigDecimal getLimiteCredito() {
-        return limiteCredito;
-    }
-
-    public Integer getCorte() {
-        return corte;
-    }
+    @NotBlank
+    @NotEmpty
+    @NotNull
+    private String franquicia;
 }

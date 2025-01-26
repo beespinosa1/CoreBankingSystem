@@ -109,7 +109,7 @@ public class TransaccionServicio {
         transaccion.setTazaInteres(BigDecimal.ZERO);
         transaccion.setEsDiferido(false);
         transaccion.setEstado(TransaccionServicio.ESTADO_APROBADA);
-        transaccion.setFechaHora(LocalDate.now());
+        transaccion.setFechaHora(LocalDateTime.now());
 
         repositorio.save(transaccion);
 
@@ -133,7 +133,7 @@ public class TransaccionServicio {
         transaccion.setTazaInteres(BigDecimal.ZERO);
         transaccion.setEsDiferido(false);
         transaccion.setEstado(TransaccionServicio.ESTADO_PENDIENTE);
-        transaccion.setFechaHora(LocalDate.now());
+        transaccion.setFechaHora(LocalDateTime.now());
 
         repositorio.save(transaccion);
 
@@ -152,7 +152,7 @@ public class TransaccionServicio {
         transaccion.setTipo(TransaccionServicio.TIPO_TRANSFERENCIA_INTERNA);
         transaccion.setTazaInteres(BigDecimal.ZERO);
         transaccion.setEstado(TransaccionServicio.ESTADO_APROBADA);
-        transaccion.setFechaHora(LocalDate.now());
+        transaccion.setFechaHora(LocalDateTime.now());
 
         repositorio.save(transaccion);
 
@@ -176,7 +176,7 @@ public class TransaccionServicio {
         transaccion.setTazaInteres(BigDecimal.ZERO);
         transaccion.setEsDiferido(false);
         transaccion.setEstado(TransaccionServicio.ESTADO_PENDIENTE);
-        transaccion.setFechaHora(LocalDate.now());
+        transaccion.setFechaHora(LocalDateTime.now());
 
         repositorio.save(transaccion);
 
@@ -214,7 +214,7 @@ public class TransaccionServicio {
         transaccion.setTipo(TransaccionServicio.TIPO_CONSUMO);
         transaccion.setComision(this.calcularComisionBanco(transaccion.getValor()));
         transaccion.setEstado(TransaccionServicio.ESTADO_PENDIENTE);
-        transaccion.setFechaHora(LocalDate.now());
+        transaccion.setFechaHora(LocalDateTime.now());
         transaccion.setCanal(TransaccionServicio.CANAL_POS);
 
         transaccion.setFechaCreacion(LocalDateTime.now(ZoneId.systemDefault()));
@@ -276,16 +276,6 @@ public class TransaccionServicio {
     public void validarTransaccion(Transaccion transaccion, String numeroTarjeta, String cvv, String fechaCaducidad,
                                    String descripcion, String numeroCuenta, String beneficiario) {
         Tarjeta tarjeta = this.tarjetaServicio.buscarPorNumero(numeroTarjeta);
-
-        if (!UtilidadHash.verificarString(cvv, tarjeta.getCvv()))
-            throw new OperacionInvalidaExcepcion("Código de seguridad de la tarjeta incorrecto");
-
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("MM/yy");
-        YearMonth fechaEntrada = YearMonth.parse(fechaCaducidad, inputFormatter);;
-        YearMonth fechaBaseDatos = YearMonth.from(tarjeta.getFechaExpiracion());
-
-        if (!fechaEntrada.equals(fechaBaseDatos))
-            throw new OperacionInvalidaExcepcion("La fecha de caducidad de la tarjeta no coincide");
 
         if (tarjeta.getCupoDisponible().compareTo(transaccion.getValor()) < 0)
             throw new OperacionInvalidaExcepcion("La tarjeta no cuenta con el cupo necesario para la transacción");

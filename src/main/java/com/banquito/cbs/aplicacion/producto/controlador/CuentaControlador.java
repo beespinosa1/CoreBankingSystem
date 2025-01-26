@@ -1,7 +1,7 @@
 package com.banquito.cbs.aplicacion.producto.controlador;
 
 import com.banquito.cbs.aplicacion.producto.controlador.adaptador.CuentaAdaptador;
-import com.banquito.cbs.aplicacion.producto.controlador.dto.CuentaDto;
+import com.banquito.cbs.aplicacion.producto.dto.CuentaDto;
 import com.banquito.cbs.aplicacion.producto.controlador.mapper.CuentaMapper;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearCuentaPeticion;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.DepositoPeticion;
@@ -12,7 +12,6 @@ import com.banquito.cbs.compartido.utilidades.UtilidadRespuesta;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;

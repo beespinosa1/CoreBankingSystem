@@ -1,4 +1,4 @@
-package com.banquito.cbs.aplicacion.producto.controlador.dto;
+package com.banquito.cbs.aplicacion.producto.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

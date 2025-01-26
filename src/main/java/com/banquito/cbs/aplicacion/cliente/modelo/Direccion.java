@@ -62,11 +62,11 @@ public class Direccion implements Serializable
     private String detalle;
 
     @ManyToOne
-    @JoinColumn(name = "PERSONA_NATURAL_ID", referencedColumnName = "ID", updatable = false, insertable = false)
+    @JoinColumn(name = "PERSONA_NATURAL_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private PersonaNatural personaNatural;
 
     @ManyToOne
-    @JoinColumn(name = "PERSONA_JURIDICA_ID", referencedColumnName = "ID", updatable = false, insertable = false)
+    @JoinColumn(name = "PERSONA_JURIDICA_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private PersonaJuridica personaJuridica;
 
     public Direccion(Integer id) {

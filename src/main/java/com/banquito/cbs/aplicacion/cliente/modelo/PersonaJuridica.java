@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -63,6 +64,16 @@ public class PersonaJuridica implements Serializable
     @ManyToOne
     @JoinColumn(name = "PERSONA_NATURAL_ID", referencedColumnName = "ID", updatable = false, insertable = false)
     private PersonaNatural personaNatural;
+
+    @OneToMany
+    @JoinColumn(
+            name = "PERSONA_JURIDICA_ID",
+            referencedColumnName = "ID",
+            insertable = false,
+            updatable = false
+    )
+    private List<Direccion> direcciones;
+
 
     public PersonaJuridica(Integer id) {
         this.id = id;

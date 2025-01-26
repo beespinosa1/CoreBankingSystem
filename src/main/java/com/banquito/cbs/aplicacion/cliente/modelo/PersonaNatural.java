@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -74,104 +75,17 @@ public class PersonaNatural implements Serializable
     @Column(name = "FECHA_ACTUALIZACION")
     private LocalDateTime fechaActualizacion;
 
+    @OneToMany
+    @JoinColumn(
+            name = "PERSONA_NATURAL_ID",
+            referencedColumnName = "ID",
+            insertable = false,
+            updatable = false
+    )
+    private List<Direccion> direcciones;
+
     public PersonaNatural(Integer id) {
         this.id = id;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public @NotNull String getTipoIdentificacion() {
-        return tipoIdentificacion;
-    }
-
-    public void setTipoIdentificacion(@NotNull String tipoIdentificacion) {
-        this.tipoIdentificacion = tipoIdentificacion;
-    }
-
-    public @NotNull String getIdentificacion() {
-        return identificacion;
-    }
-
-    public void setIdentificacion(@NotNull String identificacion) {
-        this.identificacion = identificacion;
-    }
-
-    public @NotNull String getPrimerNombre() {
-        return primerNombre;
-    }
-
-    public void setPrimerNombre(@NotNull String primerNombre) {
-        this.primerNombre = primerNombre;
-    }
-
-    public String getSegundoNombre() {
-        return segundoNombre;
-    }
-
-    public void setSegundoNombre(String segundoNombre) {
-        this.segundoNombre = segundoNombre;
-    }
-
-    public @NotNull String getPrimerApellido() {
-        return primerApellido;
-    }
-
-    public void setPrimerApellido(@NotNull String primerApellido) {
-        this.primerApellido = primerApellido;
-    }
-
-    public @NotNull String getSegundoApellido() {
-        return segundoApellido;
-    }
-
-    public void setSegundoApellido(@NotNull String segundoApellido) {
-        this.segundoApellido = segundoApellido;
-    }
-
-    public @NotNull String getEmail() {
-        return email;
-    }
-
-    public void setEmail(@NotNull String email) {
-        this.email = email;
-    }
-
-    public @NotNull String getNumeroTelefonico() {
-        return numeroTelefonico;
-    }
-
-    public void setNumeroTelefonico(@NotNull String numeroTelefonico) {
-        this.numeroTelefonico = numeroTelefonico;
-    }
-
-    public @NotNull LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
-
-    public void setFechaNacimiento(@NotNull LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
-    public LocalDateTime getFechaActualizacion() {
-        return fechaActualizacion;
-    }
-
-    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-        this.fechaActualizacion = fechaActualizacion;
     }
 
     @Override

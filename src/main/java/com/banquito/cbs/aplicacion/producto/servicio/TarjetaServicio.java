@@ -1,12 +1,21 @@
 package com.banquito.cbs.aplicacion.producto.servicio;
 
+import com.banquito.cbs.aplicacion.cliente.modelo.Cliente;
+import com.banquito.cbs.aplicacion.cliente.modelo.Direccion;
+import com.banquito.cbs.aplicacion.cliente.servicio.ClienteServicio;
+import com.banquito.cbs.aplicacion.producto.cliente.MarcaCliente;
+import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearTarjetaPeticion;
+import com.banquito.cbs.aplicacion.producto.dto.CrearTarjetaDto;
+import com.banquito.cbs.aplicacion.producto.dto.TarjetaMarcaDto;
 import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.producto.modelo.Tarjeta;
 import com.banquito.cbs.aplicacion.producto.repositorio.TarjetaRepositorio;
 import com.banquito.cbs.compartido.excepciones.OperacionInvalidaExcepcion;
 import com.banquito.cbs.compartido.utilidades.UtilidadHash;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,18 +23,28 @@ import java.time.ZoneId;
 import java.util.List;
 
 @Service
+@Slf4j
 public class TarjetaServicio {
     private final TarjetaRepositorio repositorio;
+    private final MarcaCliente cliente;
+    private final ClienteServicio clienteServicio;
+
     public static final String ENTITY_NAME = "Tarjeta";
 
-    public static final String TIPO_CREDITO = "CRE";
+    public static final String TIPO_CREDITO = "CRD";
     public static final String TIPO_DEBITO = "DEB";
 
     public static final String ESTADO_ACTIVA = "ACT";
     public static final String ESTADO_INACTIVA = "INA";
 
-    public TarjetaServicio(TarjetaRepositorio tarjetaRepositorio) {
+    public TarjetaServicio(
+            TarjetaRepositorio tarjetaRepositorio,
+            MarcaCliente cliente,
+            ClienteServicio clienteServicio
+    ) {
         this.repositorio = tarjetaRepositorio;
+        this.cliente = cliente;
+        this.clienteServicio = clienteServicio;
     }
 
     public List<Tarjeta> listar() {
@@ -50,11 +69,63 @@ public class TarjetaServicio {
                 .orElseThrow(() -> new NotFoundException(numeroTarjeta, ENTITY_NAME));
     }
 
-    public void crearTarjeta(Tarjeta tarjeta) throws Exception {
-        tarjeta.setNumero(this.generarNuevoNumeroTarjeta()); // TODO: OBTENER DATOS DE LA MARCA
-        tarjeta.setCvv(UtilidadHash.hashString("123")); // TODO: OBTENER DATOS DE LA MARCA
-        tarjeta.setFechaExpiracion(LocalDate.now().plusYears(5)); // TODO: OBTENER DATOS DE LA MARCA
-        tarjeta.setFechaEmision(LocalDate.now());
+    public void crearTarjeta(Cliente cliente, String tipo, String franquicia, BigDecimal cupo, Integer diaCorte) {
+        CrearTarjetaDto peticion = new CrearTarjetaDto();
+
+        String identificacion = cliente.getTipo().equals(ClienteServicio.PERSONA)
+            ? cliente.getPersonaNatural().getIdentificacion()
+            : cliente.getPersonaJuridica().getRuc()
+        ;
+
+        String nombre = cliente.getTipo().equals(ClienteServicio.PERSONA)
+            ? cliente.getPersonaNatural().getPrimerNombre() + " "  + cliente.getPersonaNatural().getSegundoNombre() + " "
+                + cliente.getPersonaNatural().getPrimerApellido() + " "  + cliente.getPersonaNatural().getSegundoApellido()
+            : cliente.getPersonaJuridica().getRazonSocial()
+        ;
+
+        Direccion direccion = cliente.getTipo().equals(ClienteServicio.PERSONA)
+            ? cliente.getPersonaNatural().getDirecciones().getFirst()
+            : cliente.getPersonaJuridica().getDirecciones().getFirst()
+        ;
+
+        String direccionStr = direccion.getProvincia() + ", "
+            + direccion.getCiudad() + ", "
+            + direccion.getCanton() + ", "
+            + direccion.getSector() + ", "
+            + direccion.getCallePrincipal() + ", "
+            + direccion.getNumero() + " y "
+            + direccion.getCalleSecundaria()
+        ;
+
+        String telefono = cliente.getTipo().equals(ClienteServicio.PERSONA)
+            ? cliente.getPersonaNatural().getNumeroTelefonico()
+            : cliente.getPersonaJuridica().getNumeroTelefonico()
+        ;
+
+        String correo = cliente.getTipo().equals(ClienteServicio.PERSONA)
+            ? cliente.getPersonaNatural().getEmail()
+            : cliente.getPersonaJuridica().getEmail()
+        ;
+
+        peticion.setIdentificacion(identificacion);
+        peticion.setNombre(nombre.toUpperCase());
+        peticion.setDireccion(direccionStr);
+        peticion.setTelefono(telefono);
+        peticion.setCorreo(correo);
+        peticion.setTipo(tipo);
+        peticion.setFranquicia(franquicia);
+
+        log.info("Solicitud creación de tarjeta de crédito {}", peticion);
+        TarjetaMarcaDto tarjetaMarca = this.cliente.crearTarjeta(peticion);
+
+        Tarjeta tarjeta = new Tarjeta();
+
+        tarjeta.setClienteId(cliente.getId());
+        tarjeta.setFechaEmision(tarjetaMarca.getFechaEmision());
+        tarjeta.setNumero(tarjetaMarca.getNumero());
+        tarjeta.setCupoAprobado(cupo);
+        tarjeta.setCupoDisponible(cupo);
+        tarjeta.setDiaCorte(diaCorte);
         tarjeta.setEstado(ESTADO_ACTIVA);
         tarjeta.setFechaCreacion(LocalDateTime.now(ZoneId.systemDefault()));
         tarjeta.setFechaActualizacion(LocalDateTime.now(ZoneId.systemDefault()));
