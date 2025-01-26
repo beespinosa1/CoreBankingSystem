@@ -13,10 +13,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 @RequestMapping("v1/clientes")
 @CrossOrigin("*")
 public class ClienteControlador {
@@ -44,7 +47,8 @@ public class ClienteControlador {
             Cliente cliente = this.servicio.buscarPorId(id);
             return ResponseEntity.ok(this.mapper.toDTO(cliente));
         } catch (NotFoundException nfe) {
-            System.err.println(nfe.getMessage());
+            // System.err.println(nfe.getMessage());
+            log.error("Error al buscar cliente con ID {}: no encontrado.", id, nfe);
             return ResponseEntity.notFound().build();
         }
     }
@@ -59,8 +63,16 @@ public class ClienteControlador {
     public ResponseEntity<?> modificar(
             @Parameter(description = "ID del cliente a modificar", required = true) @PathVariable Integer id,
             @RequestBody ClientePeticion peticion) {
-        Cliente cliente = this.adaptador.peticionADireccion(id, peticion);
-        this.servicio.actualizar(cliente);
-        return ResponseEntity.ok(mapper.toDTO(cliente));
+        try {
+            Cliente cliente = this.adaptador.peticionADireccion(id, peticion);
+            this.servicio.actualizar(cliente);
+            return ResponseEntity.ok(mapper.toDTO(cliente));
+        } catch (NotFoundException nfe) {
+            log.error("Error al modificar cliente con ID {}: no encontrado.", id, nfe);
+            return ResponseEntity.status(404).body("Cliente no encontrado");
+        } catch (Exception ex) {
+            log.error("Error inesperado al modificar cliente con ID {}.", id, ex);
+            return ResponseEntity.status(500).body("Error interno del servidor");
+        }
     }
 }

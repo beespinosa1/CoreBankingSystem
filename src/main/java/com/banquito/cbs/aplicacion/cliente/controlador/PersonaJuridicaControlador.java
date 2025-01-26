@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 @RequestMapping("v1/personas-juridicas")
 @CrossOrigin("*")
 public class PersonaJuridicaControlador {
@@ -31,7 +33,8 @@ public class PersonaJuridicaControlador {
     private final PersonaJuridicaAdaptador adaptador;
     private final PersonaJuridicaMapper mapper;
 
-    public PersonaJuridicaControlador(PersonaJuridicaServicio servicio, PersonaJuridicaAdaptador adaptador, PersonaJuridicaMapper mapper) {
+    public PersonaJuridicaControlador(PersonaJuridicaServicio servicio, PersonaJuridicaAdaptador adaptador,
+            PersonaJuridicaMapper mapper) {
         this.servicio = servicio;
         this.adaptador = adaptador;
         this.mapper = mapper;
@@ -39,23 +42,26 @@ public class PersonaJuridicaControlador {
 
     @Operation(summary = "Listar personas jurídicas", description = "Devuelve una lista de todas las personas jurídicas registradas.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de personas jurídicas obtenida exitosamente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDTO.class)))
+            @ApiResponse(responseCode = "200", description = "Lista de personas jurídicas obtenida exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDTO.class)))
     })
     @GetMapping
     public ResponseEntity<List<PersonaJuridicaDTO>> listar() {
-        List<PersonaJuridica> personas = this.servicio.listar();
-        List<PersonaJuridicaDTO> dtos = new ArrayList<>(personas.size());
-        for (PersonaJuridica persona : personas) {
-            dtos.add(mapper.toDTO(persona));
+        try {
+            List<PersonaJuridica> personas = this.servicio.listar();
+            List<PersonaJuridicaDTO> dtos = new ArrayList<>(personas.size());
+            for (PersonaJuridica persona : personas) {
+                dtos.add(mapper.toDTO(persona));
+            }
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            log.error("Error al listar las personas jurídicas", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(dtos);
     }
 
     @Operation(summary = "Obtener una persona jurídica por su ID", description = "Devuelve los detalles de una persona jurídica específica.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Persona jurídica encontrada",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDTO.class))),
+            @ApiResponse(responseCode = "200", description = "Persona jurídica encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDTO.class))),
             @ApiResponse(responseCode = "404", description = "Persona jurídica no encontrada", content = @Content)
     })
     @GetMapping("/{id}")
@@ -65,15 +71,16 @@ public class PersonaJuridicaControlador {
             PersonaJuridica persona = this.servicio.buscarPorId(id);
             return ResponseEntity.ok(this.mapper.toDTO(persona));
         } catch (NotFoundException nfe) {
-            System.err.println(nfe.getMessage());
+            // System.err.println(nfe.getMessage());
+            log.error("Persona jurídica no encontrada: " + id, nfe);
             return ResponseEntity.notFound().build();
         }
     }
 
+    // No hay excepción explícita
     @Operation(summary = "Crear una nueva persona jurídica", description = "Permite registrar una nueva persona jurídica.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Persona jurídica creada exitosamente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDTO.class))),
+            @ApiResponse(responseCode = "201", description = "Persona jurídica creada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos de la solicitud inválidos", content = @Content)
     })
     @PostMapping
@@ -84,19 +91,24 @@ public class PersonaJuridicaControlador {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDTO(persona));
     }
 
+    // No hay excepción explícita
     @Operation(summary = "Modificar una persona jurídica existente", description = "Permite actualizar los datos de una persona jurídica específica.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Persona jurídica actualizada exitosamente",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDTO.class))),
+            @ApiResponse(responseCode = "200", description = "Persona jurídica actualizada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDTO.class))),
             @ApiResponse(responseCode = "404", description = "Persona jurídica no encontrada", content = @Content)
     })
     @PutMapping("/{id}")
     public ResponseEntity<?> modificar(
             @Parameter(description = "ID de la persona jurídica que se desea actualizar", required = true) @PathVariable Integer id,
             @Valid @RequestBody PersonaJuridicaPeticion campos) {
-        PersonaJuridica persona = this.adaptador.peticionAPersonaJuridica(id, campos);
-        this.servicio.actualizar(persona);
-        return ResponseEntity.ok(mapper.toDTO(persona));
+        try {
+            PersonaJuridica persona = this.adaptador.peticionAPersonaJuridica(id, campos);
+            this.servicio.actualizar(persona);
+            return ResponseEntity.ok(mapper.toDTO(persona));
+        } catch (Exception e) {
+            log.error("Error al modificar persona jurídica con ID: " + id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @Operation(summary = "Eliminar una persona jurídica", description = "Permite eliminar una persona jurídica específica.")
@@ -107,7 +119,15 @@ public class PersonaJuridicaControlador {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(
             @Parameter(description = "ID de la persona jurídica que se desea eliminar", required = true) @PathVariable Integer id) {
-        this.servicio.eliminar(servicio.buscarPorId(id));
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        try {
+            this.servicio.eliminar(servicio.buscarPorId(id));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (NotFoundException nfe) {
+            log.error("Persona jurídica con ID " + id + " no encontrada", nfe);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Error al eliminar persona jurídica con ID " + id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
