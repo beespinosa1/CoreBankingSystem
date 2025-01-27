@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import com.banquito.cbs.aplicacion.cliente.modelo.Cliente;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -67,6 +68,7 @@ public class Usuario implements Serializable
     @Column(name = "FECHA_ACTUALIZACION")
     private LocalDate fechaActualizacion;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "CLIENTE_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private Cliente cliente;

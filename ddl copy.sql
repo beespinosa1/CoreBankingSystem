@@ -3,10 +3,10 @@ INSERT INTO PERSONA_NATURAL
 (TIPO_IDENTIFICACION, IDENTIFICACION, PRIMER_NOMBRE, SEGUNDO_NOMBRE, PRIMER_APELLIDO, SEGUNDO_APELLIDO, EMAIL, NUMERO_TELEFONICO, FECHA_NACIMIENTO, FECHA_CREACION)
 VALUES
 -- Persona natural independiente
-('CED', '1712345678', 'Juan', 'Carlos', 'Pérez', 'Martínez', 'juan.perez@email.com', '0987654321', '1985-06-15', CURRENT_TIMESTAMP),
+('CED', '1712345678', 'Juan', 'Carlos', 'Perez', 'Martínez', 'juan.perez@email.com', '0987654321', '1985-06-15', CURRENT_TIMESTAMP),
 -- Representantes legales de las empresas
-('CED', '1798765432', 'María', 'Isabel', 'González', 'Rodríguez', 'maria.gonzalez@email.com', '0998765432', '1980-03-20', CURRENT_TIMESTAMP),
-('CED', '1723456789', 'Roberto', 'José', 'Sánchez', 'López', 'roberto.sanchez@email.com', '0976543210', '1975-11-10', CURRENT_TIMESTAMP);
+('CED', '1798765432', 'Maria', 'Isabel', 'Gonzalez', 'Rodriguez', 'maria.gonzalez@email.com', '0998765432', '1980-03-20', CURRENT_TIMESTAMP),
+('CED', '1723456789', 'Roberto', 'Jose', 'Sanchez', 'Lopez', 'roberto.sanchez@email.com', '0976543210', '1975-11-10', CURRENT_TIMESTAMP);
 
 -- Insertar personas jurídicas
 INSERT INTO PERSONA_JURIDICA 
