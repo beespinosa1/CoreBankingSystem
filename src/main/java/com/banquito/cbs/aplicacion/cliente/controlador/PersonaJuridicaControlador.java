@@ -1,12 +1,28 @@
 package com.banquito.cbs.aplicacion.cliente.controlador;
 
-import com.banquito.cbs.aplicacion.cliente.controlador.dto.PersonaJuridicaDto;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.banquito.cbs.aplicacion.cliente.controlador.adaptador.PersonaJuridicaAdaptador;
+import com.banquito.cbs.aplicacion.cliente.controlador.dto.PersonaJuridicaDto;
 import com.banquito.cbs.aplicacion.cliente.controlador.mapper.PersonaJuridicaMapper;
 import com.banquito.cbs.aplicacion.cliente.controlador.peticion.PersonaJuridicaPeticion;
 import com.banquito.cbs.aplicacion.cliente.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.cliente.modelo.PersonaJuridica;
 import com.banquito.cbs.aplicacion.cliente.servicio.PersonaJuridicaServicio;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,13 +31,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -73,6 +82,24 @@ public class PersonaJuridicaControlador {
         } catch (NotFoundException nfe) {
             // System.err.println(nfe.getMessage());
             log.error("Persona jurídica no encontrada: " + id, nfe);
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "Buscar una persona jurídica por identificación", description = "Devuelve los detalles de una persona jurídica según su número de identificación.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Persona jurídica encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PersonaJuridicaDto.class))),
+            @ApiResponse(responseCode = "404", description = "Persona jurídica no encontrada", content = @Content)
+    })
+    @GetMapping("/identificacion/{identificacion}")
+    public ResponseEntity<PersonaJuridicaDto> buscarPorIdentificacion(
+            @Parameter(description = "Número de identificación de la persona jurídica", required = true) 
+            @PathVariable("identificacion") String identificacion) {
+        try {
+            PersonaJuridica persona = this.servicio.buscarPorRuc(identificacion);
+            return ResponseEntity.ok(this.mapper.toDto(persona));
+        } catch (NotFoundException nfe) {
+            log.error("Persona jurídica con identificación {} no encontrada", identificacion, nfe);
             return ResponseEntity.notFound().build();
         }
     }
