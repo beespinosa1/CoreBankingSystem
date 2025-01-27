@@ -1,26 +1,27 @@
 package com.banquito.cbs.aplicacion.transaccion.controlador;
 
+import java.math.BigDecimal;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.banquito.cbs.aplicacion.transaccion.controlador.mapper.TransaccionMapper;
+import com.banquito.cbs.aplicacion.transaccion.dto.RespuestaTransaccionDto;
 import com.banquito.cbs.aplicacion.transaccion.dto.TransaccionDto;
 import com.banquito.cbs.aplicacion.transaccion.modelo.Transaccion;
 import com.banquito.cbs.aplicacion.transaccion.servicio.TransaccionServicio;
 import com.banquito.cbs.compartido.utilidades.UtilidadObjeto;
-import com.banquito.cbs.compartido.utilidades.UtilidadRespuesta;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.media.Content;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,7 +67,7 @@ public class TransaccionControlador {
      * }
      * return ResponseEntity.ok(dtos);
      * } catch (NotFoundException nfe) {
-     * System.err.println(nfe.getMessage());
+     * log.error("Cuenta con ID {} no encontrada", id, nfe);
      * return ResponseEntity.notFound().build();
      * }
      * }
@@ -98,7 +99,7 @@ public class TransaccionControlador {
      * }
      * return ResponseEntity.ok(dtos);
      * } catch (NotFoundException nfe) {
-     * System.err.println(nfe.getMessage());
+     * log.error("Tarjeta con ID {} no encontrada", id, nfe);
      * return ResponseEntity.notFound().build();
      * }
      * }
@@ -110,7 +111,7 @@ public class TransaccionControlador {
             @ApiResponse(responseCode = "400", description = "Datos de la solicitud inválidos", content = @Content)
     })
     @PostMapping("/consumo-tarjeta")
-    public ResponseEntity<?> registrarConsumoTarjeta(
+    public ResponseEntity<RespuestaTransaccionDto> registrarConsumoTarjeta(
             @Parameter(description = "Detalles del consumo a registrar", required = true) @Valid @RequestBody TransaccionDto peticion)
             throws IllegalAccessException {
         Transaccion transaccion = this.mapper.toPersistence(peticion);
@@ -127,9 +128,13 @@ public class TransaccionControlador {
                 UtilidadObjeto.convertToMap(peticion.getDetalle()));
         this.servicio.enviarDineroBeneficiarioConsumo(transaccion, valorAcreditar);
 
-        Map<String, String> respuesta = new HashMap<>();
-        respuesta.put("mensaje", "Transacción exitosa");
+        RespuestaTransaccionDto respuesta = new RespuestaTransaccionDto();
+        respuesta.setMensaje("Transacción exitosa");
+        respuesta.setEstado("COMPLETADA");
+        respuesta.setFechaTransaccion(transaccion.getFechaCreacion());
+        respuesta.setValorTransaccion(transaccion.getValor());
+        respuesta.setNumeroReferencia(transaccion.getId().toString());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(UtilidadRespuesta.exito(respuesta));
+        return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
     }
 }

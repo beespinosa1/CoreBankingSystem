@@ -1,46 +1,58 @@
 package com.banquito.cbs.aplicacion.autenticacion.service;
 
-import com.banquito.cbs.aplicacion.autenticacion.modelo.Usuario;
-import com.banquito.cbs.aplicacion.autenticacion.repository.UsuarioRepositorio;
-import com.banquito.cbs.compartido.excepciones.EntidadNoEncontradaExcepcion;
-import com.banquito.cbs.compartido.utilidades.UtilidadHash;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.banquito.cbs.aplicacion.autenticacion.modelo.Usuario;
+import com.banquito.cbs.aplicacion.autenticacion.repository.UsuarioRepositorio;
+import com.banquito.cbs.aplicacion.cliente.excepcion.DuplicateException;
+import com.banquito.cbs.aplicacion.cliente.excepcion.NotFoundException;
+import com.banquito.cbs.compartido.utilidades.UtilidadHash;
 
 @Service
 public class UsuarioServicio
 {
-    private final UsuarioRepositorio usuarioRepositorio;
+    private final UsuarioRepositorio repositorio;
+    public static final String ENTITY_NAME = "Usuario";
 
     private static final String ESTADO_ACTIVO = "ACT";
     private static final String ESTADO_INACTIVO = "INA";
     private static final String ESTADO_BLOQUEADO = "BLO";
 
-    public UsuarioServicio(UsuarioRepositorio usuarioRepositorio) {
-        this.usuarioRepositorio = usuarioRepositorio;
+    public UsuarioServicio(UsuarioRepositorio repositorio) {
+        this.repositorio = repositorio;
     }
 
-    public List<Usuario> getAll() {
-        return usuarioRepositorio.findAll();
+    public List<Usuario> listar() {
+        return repositorio.findAll();
     }
 
     public Usuario find(Integer id) {
-        return usuarioRepositorio.findById(id).orElseThrow(() -> new EntidadNoEncontradaExcepcion("Uusario no registrado"));
+        return repositorio.findById(id)
+                .orElseThrow(() -> new NotFoundException(id.toString(), ENTITY_NAME));
     }
 
     public void crear(Usuario usuario) {
-        usuario.setEstado(UsuarioServicio.ESTADO_ACTIVO);
+        if (repositorio.findByUsuario(usuario.getUsuario()).isPresent()) {
+            throw new DuplicateException(usuario.getUsuario(), ENTITY_NAME);
+        }
+        
+        usuario.setEstado(ESTADO_ACTIVO);
         usuario.setContrasenia(UtilidadHash.hashString(usuario.getContrasenia()));
-        usuarioRepositorio.save(usuario);
+        repositorio.save(usuario);
     }
 
     public void editar(Usuario usuario, String contrasenia) {
+        if (!repositorio.findByUsuario(usuario.getUsuario()).isPresent()) {
+            throw new NotFoundException(usuario.getUsuario(), ENTITY_NAME);
+        }
+        
         usuario.setContrasenia(UtilidadHash.hashString(contrasenia));
-        usuarioRepositorio.save(usuario);
+        repositorio.save(usuario);
     }
 
     public void eliminar(Usuario usuario) {
-        usuarioRepositorio.delete(usuario);
+        repositorio.delete(usuario);
     }
 }

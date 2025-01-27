@@ -1,30 +1,42 @@
 package com.banquito.cbs.aplicacion.producto.controlador;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.banquito.cbs.aplicacion.producto.controlador.adaptador.CuentaAdaptador;
-import com.banquito.cbs.aplicacion.producto.dto.CuentaDto;
 import com.banquito.cbs.aplicacion.producto.controlador.mapper.CuentaMapper;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearCuentaPeticion;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.DepositoPeticion;
+import com.banquito.cbs.aplicacion.producto.dto.CuentaDto;
 import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.producto.modelo.Cuenta;
 import com.banquito.cbs.aplicacion.producto.servicio.CuentaServicio;
 import com.banquito.cbs.compartido.utilidades.UtilidadRespuesta;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("v1/cuentas")
 @CrossOrigin("*")
+@Slf4j
 public class CuentaControlador {
 
         private final CuentaServicio servicio;
@@ -52,7 +64,7 @@ public class CuentaControlador {
                         }
                         return ResponseEntity.ok(dtos);
                 } catch (NotFoundException nfe) {
-                        System.err.println(nfe.getMessage());
+                        log.error("Cliente con ID {} no encontrado", idCliente, nfe);
                         return ResponseEntity.notFound().build();
                 }
         }
@@ -69,7 +81,7 @@ public class CuentaControlador {
                         Cuenta cuenta = this.servicio.buscarPorId(id);
                         return ResponseEntity.ok(mapper.toDto(cuenta));
                 } catch (NotFoundException nfe) {
-                        System.err.println(nfe.getMessage());
+                        log.error("Cuenta con ID {} no encontrada", id, nfe);
                         return ResponseEntity.notFound().build();
                 }
         }
