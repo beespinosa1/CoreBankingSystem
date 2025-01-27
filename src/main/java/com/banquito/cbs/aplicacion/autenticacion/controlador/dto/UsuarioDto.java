@@ -19,7 +19,8 @@ public class UsuarioDto {
     private Integer clienteId;
     
     @NotBlank(message = "El rol es requerido")
-    @Pattern(regexp = "ADM|USR", message = "El rol debe ser ADM o USR")
+    @Pattern(regexp = "ADN|USR", 
+            message = "El rol debe ser Administrador (ADN) o Usuario (USR)")
     private String rol;
     
     @NotBlank(message = "El usuario es requerido")
@@ -34,7 +35,8 @@ public class UsuarioDto {
     private String img;
     
     @NotBlank(message = "El estado es requerido")
-    @Pattern(regexp = "ACT|INA|BLO", message = "El estado debe ser ACT, INA o BLO")
+    @Pattern(regexp = "ACT|INA|BLO", 
+            message = "El estado debe ser Activo (ACT), Inactivo (INA) o Bloqueado (BLO)")
     private String estado;
     
     private LocalDateTime fechaUltimoIngreso;

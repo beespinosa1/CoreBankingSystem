@@ -3,10 +3,13 @@ package com.banquito.cbs.aplicacion.transaccion.controlador.dto;
 import java.time.LocalDate;
 import java.util.Map;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +19,8 @@ public class DetalleTransaccionDto {
     private Integer transaccionId;
 
     @NotBlank(message = "El tipo de cuenta es requerido")
-    @Pattern(regexp = "AHO|COR|PLA", message = "El tipo de cuenta debe ser AHO, COR o PLA")
+    @Pattern(regexp = "AHO|COR", 
+            message = "El tipo de cuenta debe ser Ahorro (AHO) o Corriente (COR)")
     private String tipoCuenta;
 
     @NotBlank(message = "El beneficiario es requerido")
@@ -39,7 +43,7 @@ public class DetalleTransaccionDto {
     @Pattern(regexp = "^[0-9]+$", message = "El BIN del banco de destino debe contener solo números")
     private String binBancoDestino;
 
-    @Size(max = 256, message = "La descripción no puede exceder los 256 caracteres")
+    @Size(max = 128, message = "La descripción no puede exceder los 128 caracteres")
     private String descripcion;
 
     @Size(max = 4000, message = "El detalle JSON no puede exceder los 4000 caracteres")

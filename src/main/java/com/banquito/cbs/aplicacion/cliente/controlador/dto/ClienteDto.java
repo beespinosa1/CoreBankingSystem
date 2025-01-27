@@ -3,10 +3,15 @@ package com.banquito.cbs.aplicacion.cliente.controlador.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +25,8 @@ public class ClienteDto {
     private Integer personaJuridicaId;
     
     @NotBlank(message = "El tipo de cliente es requerido")
-    @Pattern(regexp = "NAT|JUR", message = "El tipo de cliente debe ser NAT o JUR")
+    @Pattern(regexp = "COR|PER", 
+            message = "El tipo de cliente debe ser Corporativo (COR) o Personal (PER)")
     private String tipo;
     
     @NotNull(message = "El ingreso promedio mensual es requerido")
@@ -29,7 +35,8 @@ public class ClienteDto {
     private BigDecimal ingresoPromedioMensual;
     
     @NotBlank(message = "El estado es requerido")
-    @Pattern(regexp = "ACT|INA|BLO", message = "El estado debe ser ACT, INA o BLO")
+    @Pattern(regexp = "ACT|INA", 
+            message = "El estado debe ser Activo (ACT) o Inactivo (INA)")
     private String estado;
     
     @PastOrPresent(message = "La fecha de creación no puede ser futura")

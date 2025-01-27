@@ -1,26 +1,25 @@
 package com.banquito.cbs.aplicacion.producto.servicio;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.banquito.cbs.aplicacion.cliente.modelo.Cliente;
 import com.banquito.cbs.aplicacion.cliente.modelo.Direccion;
 import com.banquito.cbs.aplicacion.cliente.servicio.ClienteServicio;
 import com.banquito.cbs.aplicacion.producto.cliente.MarcaCliente;
-import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearTarjetaPeticion;
 import com.banquito.cbs.aplicacion.producto.dto.CrearTarjetaDto;
 import com.banquito.cbs.aplicacion.producto.dto.TarjetaMarcaDto;
 import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.producto.modelo.Tarjeta;
 import com.banquito.cbs.aplicacion.producto.repositorio.TarjetaRepositorio;
 import com.banquito.cbs.compartido.excepciones.OperacionInvalidaExcepcion;
-import com.banquito.cbs.compartido.utilidades.UtilidadHash;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -84,8 +83,8 @@ public class TarjetaServicio {
         ;
 
         Direccion direccion = cliente.getTipo().equals(ClienteServicio.PERSONA)
-            ? cliente.getPersonaNatural().getDirecciones().getFirst()
-            : cliente.getPersonaJuridica().getDirecciones().getFirst()
+            ? cliente.getPersonaNatural().getDirecciones().get(0)
+            : cliente.getPersonaJuridica().getDirecciones().get(0)
         ;
 
         String direccionStr = direccion.getProvincia() + ", "

@@ -4,10 +4,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -17,10 +22,12 @@ public class TransaccionDto {
     private Integer cuentaId;
     private Integer tarjetaId;
     @NotBlank(message = "El tipo de transacción es requerido")
-    @Pattern(regexp = "DEP|RET|TRA|PAG", message = "El tipo debe ser DEP, RET, TRA o PAG")
+    @Pattern(regexp = "DEP|PTC|CNS|REV|TRI|TRE|PAC", 
+            message = "El tipo debe ser Depósito (DEP), Pago Tarjeta Crédito (PTC), Consumo (CNS), Reverso (REV), Transferencia Interna (TRI), Transferencia Externa (TRE) o Pago Automático (PAC)")
     private String tipo;
     @NotBlank(message = "El canal es requerido")
-    @Pattern(regexp = "WEB|MOV|ATM|VEN|OFI", message = "El canal debe ser WEB, MOV, ATM, VEN u OFI")
+    @Pattern(regexp = "WEB|EXT|POS", 
+            message = "El canal debe ser Web (WEB), Externo (EXT) o Punto de Venta (POS)")
     private String canal;
     @NotNull(message = "La fecha y hora es requerida")
     @PastOrPresent(message = "La fecha y hora no puede ser futura")
@@ -37,7 +44,8 @@ public class TransaccionDto {
     private BigDecimal tazaInteres;
     private Boolean esDiferido;
     @NotBlank(message = "El estado es requerido")
-    @Pattern(regexp = "PEN|APR|REC|REV", message = "El estado debe ser PEN, APR, REC o REV")
+    @Pattern(regexp = "ANU|APR|REC|REV|PEN", 
+            message = "El estado debe ser Anulado (ANU), Aprobado (APR), Rechazado (REC), Reversado (REV) o Pendiente (PEN)")
     private String estado;
     @PastOrPresent(message = "La fecha de creación no puede ser futura")
     private LocalDateTime fechaCreacion;

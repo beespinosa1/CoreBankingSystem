@@ -1,13 +1,20 @@
 package com.banquito.cbs.aplicacion.producto.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -24,15 +31,8 @@ public class TarjetaDto {
     @Pattern(regexp = "^[0-9]+$", message = "El número de tarjeta debe contener solo números")
     private String numero;
 
+    @Size(max = 256, message = "La clave no puede exceder los 256 caracteres")
     private String clave;
-
-    @NotNull(message = "La fecha de expiración es requerida")
-    @Future(message = "La fecha de expiración debe ser futura")
-    private LocalDate fechaExpiracion;
-
-    @NotBlank(message = "El CVV es requerido")
-    @Size(min = 3, max = 4, message = "El CVV debe tener entre 3 y 4 dígitos")
-    private String cvv;
 
     @NotNull(message = "El cupo aprobado es requerido")
     @DecimalMin(value = "0.01", message = "El cupo aprobado debe ser mayor a 0")
@@ -41,6 +41,7 @@ public class TarjetaDto {
 
     @NotNull(message = "El cupo disponible es requerido")
     @DecimalMin(value = "0.00", message = "El cupo disponible no puede ser negativo")
+    @DecimalMax(value = "999999999.99", message = "El cupo disponible excede el límite permitido")
     private BigDecimal cupoDisponible;
 
     @NotNull(message = "El día de corte es requerido")
@@ -50,10 +51,11 @@ public class TarjetaDto {
 
     @NotNull(message = "La fecha de emisión es requerida")
     @PastOrPresent(message = "La fecha de emisión no puede ser futura")
-    private LocalDate fechaEmision;
+    private LocalDateTime fechaEmision;
 
     @NotBlank(message = "El estado es requerido")
-    @Pattern(regexp = "ACT|INA|BLO", message = "El estado debe ser ACT, INA O BLO")
+    @Pattern(regexp = "ACT|INA|BLO", 
+            message = "El estado debe ser Activo (ACT), Inactivo (INA) o Bloqueado (BLO)")
     private String estado;
 
     @PastOrPresent(message = "La fecha de creación no puede ser futura")

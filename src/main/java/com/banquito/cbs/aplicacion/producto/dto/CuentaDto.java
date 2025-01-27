@@ -3,10 +3,16 @@ package com.banquito.cbs.aplicacion.producto.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +25,7 @@ public class CuentaDto {
     private Integer clienteId;
 
     @NotBlank(message = "El tipo de cuenta es requerido")
-    @Pattern(regexp = "AHO|COR", message = "El tipo debe ser AHO o COR")
+    @Pattern(regexp = "AHO|COR", message = "El tipo de cuenta debe ser Ahorro (AHO) o Corriente (COR)")
     private String tipo;
 
     @NotBlank(message = "El número de cuenta es requerido")
@@ -43,7 +49,7 @@ public class CuentaDto {
     private BigDecimal saldoAcreditar;
 
     @NotBlank(message = "El estado es requerido")
-    @Pattern(regexp = "ACT|INA", message = "El estado debe ser ACT o INA")
+    @Pattern(regexp = "ACT|INA", message = "El estado debe ser Activo (ACT) o Inactivo (INA)")
     private String estado;
 
     @PastOrPresent(message = "La fecha de creación no puede ser futura")
