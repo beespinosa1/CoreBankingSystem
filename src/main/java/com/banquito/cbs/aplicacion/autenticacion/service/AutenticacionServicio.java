@@ -68,7 +68,7 @@ public class AutenticacionServicio
             
             datosUsuario.put("cliente", datosCliente);
         }
-
+        System.out.println("Datos completos: " + datosUsuario);
         return datosUsuario;
     }
 

@@ -11,5 +11,5 @@ import com.banquito.cbs.aplicacion.transaccion.modelo.Transaccion;
 public interface TransaccionMapper {
     TransaccionDto toDto(Transaccion transaccion);
 
-    Transaccion toPersistence(TransaccionDto dto);
+    Transaccion toModel(TransaccionDto dto);
 }
