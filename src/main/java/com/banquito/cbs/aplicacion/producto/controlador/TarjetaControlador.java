@@ -20,6 +20,7 @@ import com.banquito.cbs.aplicacion.cliente.servicio.ClienteServicio;
 import com.banquito.cbs.aplicacion.producto.controlador.adaptador.TarjetaAdaptador;
 import com.banquito.cbs.aplicacion.producto.controlador.mapper.TarjetaMapper;
 import com.banquito.cbs.aplicacion.producto.controlador.peticion.CrearTarjetaPeticion;
+import com.banquito.cbs.aplicacion.producto.dto.TarjetaCreadaDto;
 import com.banquito.cbs.aplicacion.producto.dto.TarjetaDto;
 import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.producto.modelo.Tarjeta;
@@ -105,8 +106,8 @@ public class TarjetaControlador {
                 @Parameter(description = "Datos necesarios para crear la tarjeta", required = true) @RequestBody CrearTarjetaPeticion peticion
         ) {
                 Cliente cliente = this.clienteServicio.buscarPorId(peticion.getClienteId());
-                this.servicio.crearTarjeta(cliente,TarjetaServicio.TIPO_CREDITO, peticion.getFranquicia(), peticion.getLimiteCredito(), peticion.getCorte());
-                return null;
+                TarjetaCreadaDto tarjetaCreada = this.servicio.crearTarjeta(cliente,TarjetaServicio.TIPO_CREDITO, peticion.getFranquicia(), peticion.getLimiteCredito(), peticion.getCorte());
+                return ResponseEntity.status(HttpStatus.CREATED).body(tarjetaCreada);
         }
 
         @Operation(summary = "Activar una tarjeta", description = "Permite activar una tarjeta específica.")

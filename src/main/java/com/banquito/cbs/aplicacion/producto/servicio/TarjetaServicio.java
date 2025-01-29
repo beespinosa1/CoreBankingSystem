@@ -13,6 +13,7 @@ import com.banquito.cbs.aplicacion.cliente.modelo.Direccion;
 import com.banquito.cbs.aplicacion.cliente.servicio.ClienteServicio;
 import com.banquito.cbs.aplicacion.producto.cliente.MarcaCliente;
 import com.banquito.cbs.aplicacion.producto.dto.CrearTarjetaDto;
+import com.banquito.cbs.aplicacion.producto.dto.TarjetaCreadaDto;
 import com.banquito.cbs.aplicacion.producto.dto.TarjetaMarcaDto;
 import com.banquito.cbs.aplicacion.producto.excepcion.NotFoundException;
 import com.banquito.cbs.aplicacion.producto.modelo.Tarjeta;
@@ -68,7 +69,7 @@ public class TarjetaServicio {
                 .orElseThrow(() -> new NotFoundException(numeroTarjeta, ENTITY_NAME));
     }
 
-    public void crearTarjeta(Cliente cliente, String tipo, String franquicia, BigDecimal cupo, Integer diaCorte) {
+    public TarjetaCreadaDto crearTarjeta(Cliente cliente, String tipo, String franquicia, BigDecimal cupo, Integer diaCorte) {
         CrearTarjetaDto peticion = new CrearTarjetaDto();
 
         String identificacion = cliente.getTipo().equals(ClienteServicio.PERSONA)
@@ -130,6 +131,13 @@ public class TarjetaServicio {
         tarjeta.setFechaActualizacion(LocalDateTime.now(ZoneId.systemDefault()));
 
         repositorio.save(tarjeta);
+
+        TarjetaCreadaDto tarjetaCreada = new TarjetaCreadaDto();
+        tarjetaCreada.setNumero(tarjeta.getNumero());
+        tarjetaCreada.setCvv(tarjetaMarca.getCvv());
+        tarjetaCreada.setFechaCaducidad(tarjetaMarca.getFechaCaducidad());
+
+        return tarjetaCreada;
     }
 
     public void actualizarTarjeta(Tarjeta tarjeta) {
